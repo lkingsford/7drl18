@@ -7,6 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using MonoGame.Extended.NuclexGui;
+using MonoGame.Extended.Input.InputListeners;
+using MonoGame.Extended.NuclexGui.Controls.Desktop;
+
 namespace Desktop
 {
     class GameState : State
@@ -20,10 +24,35 @@ namespace Desktop
         /// Create a game interface from a given game
         /// </summary>
         /// <param name="Game">Game object that is being played</param>
-        public GameState(Game.Game Game)
+        public GameState(Game.Game Game, Microsoft.Xna.Framework.Game MonogameGame)
         {
             this.G = Game;
+
+            inputListener = new InputListenerComponent(MonogameGame);
+            inputManager = new MonoGame.Extended.NuclexGui.GuiInputService(inputListener);
+
+            gui = new GuiManager(MonogameGame.Services, inputManager);
+            gui.Screen = new GuiScreen();
+            gui.Initialize();
+            var button = new GuiButtonControl
+            {
+                Name = "button",
+                Bounds = new UniRectangle(new UniVector(new UniScalar(10), new UniScalar(10)), new UniVector(new UniScalar(200), new UniScalar(100))),
+                Text = "Dang!"
+            };
+
+            button.Pressed += OnButtonPressed;
+            gui.Screen.Desktop.Children.Add(button);
         }
+
+        private void OnButtonPressed(object sender, EventArgs e)
+        {
+            toggle = !toggle;
+        }
+
+        private readonly GuiManager gui;
+        private GuiInputService inputManager;
+        private InputListenerComponent inputListener;
 
         /// <summary>
         /// State as of the previous Update
@@ -57,6 +86,9 @@ namespace Desktop
             //{
             //    StateStack.Add(new AtlasWarriors.LoseState(G));
             //}
+
+            inputListener.Update(GameTime);
+            gui.Update(GameTime);
         }
 
         /// <summary>
@@ -106,15 +138,24 @@ namespace Desktop
             }
         }
 
+        bool toggle = false; 
+
         /// <summary>
         /// Draw this state
         /// </summary>
         /// <param name="GameTime">Snapshot of timing</param>
         public override void Draw(GameTime GameTime)
         {
+            if (toggle)
+            {
+                AppGraphicsDevice.Clear(Color.Red);
+            }
+
             AppSpriteBatch.Begin();
             // Draw things here
             AppSpriteBatch.End();
+
+            gui.Draw(GameTime);
         }
     }
 }

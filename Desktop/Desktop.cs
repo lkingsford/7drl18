@@ -24,7 +24,11 @@ namespace Desktop
         public Desktop()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
             Content.RootDirectory = "Content";
+
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -60,7 +64,7 @@ namespace Desktop
             State.StateStack = States;
 
             // Create a new game, and make the UI on top of the stack
-            States.Add(new GameState(new Game.Game()));
+            States.Add(new GameState(new Game.Game(), this));
 
             base.Initialize();
         }
@@ -86,7 +90,7 @@ namespace Desktop
             // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
+        /// <summary>Test
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>

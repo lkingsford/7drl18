@@ -45,6 +45,11 @@ namespace Game
         static public int ScreenHeight;
 
         /// <summary>
+        /// The Monogame Game
+        /// </summary>
+        static public Microsoft.Xna.Framework.Game GameApp;
+
+        /// <summary>
         /// Run logic for this state - including input
         /// </summary>
         /// <param name="GameTime">Snapshot of timing</param>

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using MonoGame.Extended.NuclexGui;
 using MonoGame.Extended.Input.InputListeners;
 using MonoGame.Extended.NuclexGui.Controls.Desktop;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Desktop
 {
@@ -28,31 +29,41 @@ namespace Desktop
         {
             this.G = Game;
 
-            inputListener = new InputListenerComponent(MonogameGame);
-            inputManager = new MonoGame.Extended.NuclexGui.GuiInputService(inputListener);
+            //inputListener = new InputListenerComponent(MonogameGame);
+            //inputManager = new MonoGame.Extended.NuclexGui.GuiInputService(inputListener);
 
-            gui = new GuiManager(MonogameGame.Services, inputManager);
-            gui.Screen = new GuiScreen();
-            gui.Initialize();
-            var button = new GuiButtonControl
-            {
-                Name = "button",
-                Bounds = new UniRectangle(new UniVector(new UniScalar(10), new UniScalar(10)), new UniVector(new UniScalar(200), new UniScalar(100))),
-                Text = "Dang!"
-            };
+            //gui = new GuiManager(MonogameGame.Services, inputManager);
+            //gui.Screen = new GuiScreen();
+            //gui.Initialize();
+            //var button = new GuiButtonControl
+            //{
+            //    Name = "button",
+            //    Bounds = new UniRectangle(new UniVector(new UniScalar(10), new UniScalar(10)), new UniVector(new UniScalar(200), new UniScalar(100))),
+            //    Text = "Dang!"
+            //};
 
-            button.Pressed += OnButtonPressed;
-            gui.Screen.Desktop.Children.Add(button);
+            //button.Pressed += OnButtonPressed;
+            //gui.Screen.Desktop.Children.Add(button);
+
+            MapTileSprites = AppContentManager.Load<Texture2D>("MapTiles");
         }
 
-        private void OnButtonPressed(object sender, EventArgs e)
-        {
-            toggle = !toggle;
-        }
+        Texture2D MapTileSprites;
 
-        private readonly GuiManager gui;
-        private GuiInputService inputManager;
-        private InputListenerComponent inputListener;
+        //GuiScreen oldScreen;
+
+        //private void OnButtonPressed(object sender, EventArgs e)
+        //{
+        //    toggle = !toggle;
+        //    if (toggle)
+        //    {
+        //        gui.Screen = new GuiScreen();
+        //    }
+        //}
+
+        //private readonly GuiManager gui;
+        //private GuiInputService inputManager;
+        //private InputListenerComponent inputListener;
 
         /// <summary>
         /// State as of the previous Update
@@ -87,8 +98,8 @@ namespace Desktop
             //    StateStack.Add(new AtlasWarriors.LoseState(G));
             //}
 
-            inputListener.Update(GameTime);
-            gui.Update(GameTime);
+            //inputListener.Update(GameTime);
+            //gui.Update(GameTime);
         }
 
         /// <summary>
@@ -153,9 +164,28 @@ namespace Desktop
 
             AppSpriteBatch.Begin();
             // Draw things here
+
+            var mapToDraw = G.VisibleMap;
+
+            var tileWidth = 64;
+            var tileHeight = 64;
+
+            for (var ix = 0; ix < G.CameraWidth; ++ix)
+            {
+                for (var iy = 0; iy < G.CameraHeight; ++iy)
+                {
+                    AppSpriteBatch.Draw(MapTileSprites,
+                        // Dest
+                        new Rectangle(tileWidth * ix, tileHeight * iy, tileWidth, tileHeight),
+                        // Src
+                        new Rectangle(tileWidth * mapToDraw[ix, iy].DrawTile, 0, tileWidth, tileHeight),
+                        Color.White);
+                }
+            }
+
             AppSpriteBatch.End();
 
-            gui.Draw(GameTime);
+//            gui.Draw(GameTime);
         }
     }
 }

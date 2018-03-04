@@ -6,5 +6,8 @@ namespace Game
 {
     public class Player : Actor
     {
+        public Player(MapTile[,] globalMap) : base(globalMap)
+        {
+        }
     }
 }

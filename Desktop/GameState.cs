@@ -46,9 +46,11 @@ namespace Desktop
             //gui.Screen.Desktop.Children.Add(button);
 
             MapTileSprites = AppContentManager.Load<Texture2D>("MapTiles");
+            PCSprites = AppContentManager.Load<Texture2D>("CharacterSprites");
         }
 
         Texture2D MapTileSprites;
+        Texture2D PCSprites;
 
         //GuiScreen oldScreen;
 
@@ -113,38 +115,38 @@ namespace Desktop
                 case Keys.H:
                 case Keys.Left:
                 case Keys.NumPad4:
-                    //G.Player.NextMove = Player.Instruction.MOVE_W;
+                    G.Player.Move(new XY(-1, 0));
                     break;
                 case Keys.K:
                 case Keys.Up:
                 case Keys.NumPad8:
-                    //G.Player.NextMove = Player.Instruction.MOVE_N;
+                    G.Player.Move(new XY(0, -1));
                     break;
                 case Keys.L:
                 case Keys.Right:
                 case Keys.NumPad6:
-                    //G.Player.NextMove = Player.Instruction.MOVE_E;
+                    G.Player.Move(new XY(1, 0));
                     break;
                 case Keys.J:
                 case Keys.Down:
                 case Keys.NumPad2:
-                    //G.Player.NextMove = Player.Instruction.MOVE_S;
+                    G.Player.Move(new XY(0, 1));
                     break;
                 case Keys.Y:
                 case Keys.NumPad7:
-                    //G.Player.NextMove = Player.Instruction.MOVE_NW;
+                    G.Player.Move(new XY(-1, -1));
                     break;
                 case Keys.U:
                 case Keys.NumPad9:
-                    //G.Player.NextMove = Player.Instruction.MOVE_NE;
+                    G.Player.Move(new XY(1, -1));
                     break;
                 case Keys.B:
                 case Keys.NumPad1:
-                    //G.Player.NextMove = Player.Instruction.MOVE_SW;
+                    G.Player.Move(new XY(-1, 1));
                     break;
                 case Keys.N:
                 case Keys.NumPad3:
-                    //G.Player.NextMove = Player.Instruction.MOVE_SE;
+                    G.Player.Move(new XY(1, 1));
                     break;
             }
         }
@@ -181,6 +183,16 @@ namespace Desktop
                         new Rectangle(tileWidth * mapToDraw[ix, iy].DrawTile, 0, tileWidth, tileHeight),
                         Color.White);
                 }
+            }
+
+            foreach (var i in G.VisibleActors)
+            {
+                AppSpriteBatch.Draw(PCSprites,
+                    //Dest
+                    new Rectangle(tileWidth * (i.Location.X - G.CameraTopLeft.X), tileHeight * (i.Location.Y - G.CameraTopLeft.Y), tileWidth, tileHeight),
+                    //Src
+                    new Rectangle(i.Sprite * tileWidth, 0, tileWidth, tileHeight),
+                    Color.White);
             }
 
             AppSpriteBatch.End();

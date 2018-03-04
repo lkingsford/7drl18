@@ -38,6 +38,10 @@ namespace Game
                     GlobalMap[ix, iy] = new MapTile(walkable, tiledTile.LocalTileIdentifier);
                 }
             }
+
+            Player = new Player(GlobalMap);
+            Player.Location = new XY(5, 3);
+            Actors.Add(Player);
         }
 
         private ContentManager Content;
@@ -95,6 +99,22 @@ namespace Game
                 return result;
             }
         }
+
+        /// <summary>
+        /// Currently visible actors. Positions are still absolute./
+        /// </summary>
+        public IReadOnlyList<Actor> VisibleActors
+        {
+            get
+            {
+                return Actors.Where(i => i.Location.ContainedBy(CameraTopLeft.X, CameraTopLeft.Y, CameraTopLeft.X + CameraWidth, CameraTopLeft.Y + CameraHeight)).ToList().AsReadOnly();
+            }
+        }
+
+        /// <summary>
+        /// Actors in game 
+        /// </summary>
+        public List<Actor> Actors = new List<Actor>();
 
         private int MapWidth
         {

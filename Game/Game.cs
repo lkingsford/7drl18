@@ -39,9 +39,37 @@ namespace Game
                 }
             }
 
-            Player = new Player(GlobalMap);
-            Player.Location = new XY(5, 3);
-            Actors.Add(Player);
+            // Tiled stores objects with pixels - hence, needing to do the math here
+            foreach (var o in map.GetLayer<TiledMapObjectLayer>("spawn").Objects)
+            {
+                var tileX = (int)o.Position.X / map.TileWidth;
+                var tileY = (int)o.Position.Y / map.TileHeight;
+
+                Actor actor;
+
+                switch (o.Name)
+                {
+                    case "pc":
+                        actor = new Player(GlobalMap);
+                        Player = (Player)actor;
+                        break;
+                    case "bad":
+                        actor = new Actor(GlobalMap);
+                        actor.Sprite = 1;
+                        break;
+                    case "knife":
+                        actor = new Actor(GlobalMap);
+                        actor.Sprite = 2;
+                        break;
+                    default:
+                        // Bad.
+                        // TODO: Log
+                        continue;
+                }
+
+                actor.Location = new XY(tileX, tileY);
+                Actors.Add(actor);
+            }
         }
 
         private ContentManager Content;
@@ -107,7 +135,9 @@ namespace Game
         {
             get
             {
-                return Actors.Where(i => i.Location.ContainedBy(CameraTopLeft.X, CameraTopLeft.Y, CameraTopLeft.X + CameraWidth, CameraTopLeft.Y + CameraHeight)).ToList().AsReadOnly();
+                return Actors.Where(i => 
+                    i.Location.ContainedBy(CameraTopLeft.X, CameraTopLeft.Y,
+                                           CameraTopLeft.X + CameraWidth - 1, CameraTopLeft.Y + CameraHeight - 1)).ToList().AsReadOnly();
             }
         }
 
@@ -139,7 +169,10 @@ namespace Game
         {
             get
             {
-                return new XY(0, 0);
+                var centerPlayerCamera = Player.Location + new XY(-CameraWidth / 2, -CameraWidth / 2);
+                var minBoundedCamera = new XY(Math.Max(0, centerPlayerCamera.X), Math.Max(0, centerPlayerCamera.Y));
+                var maxBoundedCamera = new XY(Math.Min(MapWidth - CameraWidth, minBoundedCamera.X), Math.Min(MapHeight - CameraHeight, minBoundedCamera.Y));
+                return maxBoundedCamera;
             }
         }
 

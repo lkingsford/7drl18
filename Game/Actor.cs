@@ -28,7 +28,11 @@ namespace Game
         {
             var newLocation = Location + dxDy;
 
-            if (gameMap[newLocation.X, newLocation.Y].Walkable)
+            if (newLocation.X > 0 &&
+                newLocation.X < gameMap.GetLength(0) &&
+                newLocation.Y > 0 &&
+                newLocation.Y < gameMap.GetLength(1) &&
+                (gameMap[newLocation.X, newLocation.Y].Walkable))
             {
                 Location = newLocation;
             }

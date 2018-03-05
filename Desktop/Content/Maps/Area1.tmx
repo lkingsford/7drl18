@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="64" tileheight="64" infinite="0" nextobjectid="37">
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="64" tileheight="64" infinite="0" nextobjectid="44">
  <tileset firstgid="1" source="WorldTiles.tsx"/>
  <layer name="base" width="32" height="32">
   <data encoding="csv">
@@ -41,22 +41,43 @@
   <object id="30" name="pc" x="512" y="576">
    <point/>
   </object>
-  <object id="31" name="bad" x="320" y="384">
+  <object id="31" name="bad" x="320" y="448">
    <point/>
   </object>
   <object id="32" name="bad" x="512" y="256">
    <point/>
   </object>
-  <object id="33" name="bad" x="768" y="384">
+  <object id="33" name="bad" x="896" y="384">
    <point/>
   </object>
-  <object id="34" name="bad" x="320" y="768">
+  <object id="34" name="bad" x="192" y="640">
    <point/>
   </object>
   <object id="35" name="bad" x="512" y="896">
    <point/>
   </object>
-  <object id="36" name="knife" x="768" y="768">
+  <object id="36" name="knife" x="832" y="1152">
+   <point/>
+  </object>
+  <object id="37" name="bad" x="192" y="1152">
+   <point/>
+  </object>
+  <object id="38" name="bad" x="384" y="1344">
+   <point/>
+  </object>
+  <object id="39" name="bad" x="640" y="1280">
+   <point/>
+  </object>
+  <object id="40" name="knife" x="832" y="576">
+   <point/>
+  </object>
+  <object id="41" name="bad" x="1024" y="768">
+   <point/>
+  </object>
+  <object id="42" name="bad" x="1088" y="512">
+   <point/>
+  </object>
+  <object id="43" name="bad" x="960" y="960">
    <point/>
   </object>
  </objectgroup>

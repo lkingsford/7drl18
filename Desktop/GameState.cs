@@ -51,6 +51,7 @@ namespace Desktop
             SpentMomentumSprite = AppContentManager.Load<Texture2D>("UiElements/SpentMomentumMarker");
             HpSprite = AppContentManager.Load<Texture2D>("UiElements/HpMarker");
             MonsterDetailsFont = AppContentManager.Load<SpriteFont>("UiElements/MonsterDisplay");
+            StateFont = AppContentManager.Load<SpriteFont>("UiElements/TurnState");
         }
 
         Texture2D MapTileSprites;
@@ -60,6 +61,7 @@ namespace Desktop
         Texture2D HpSprite;
 
         SpriteFont MonsterDetailsFont;
+        SpriteFont StateFont;
 
         //GuiScreen oldScreen;
 
@@ -157,6 +159,10 @@ namespace Desktop
                 case Keys.NumPad3:
                     G.Player.NextMove = Player.Action.SE;
                     break;
+                case Keys.NumPad5:
+                case Keys.Space:
+                    G.Player.NextMove = Player.Action.Wait;
+                    break;
             }
 
             if (G.Player.NextMove != null)
@@ -217,8 +223,14 @@ namespace Desktop
                 var message = i.HP.ToString();
                 if (i.Stunned)
                 {
-                    message += " (Stunned)";
+                    message += "\n(Stunned)";
                 }
+
+                if ((i as Enemy)?.Attacking ?? false)
+                {
+                    message += "\n(Attacking)";
+                }
+
                 AppSpriteBatch.DrawString(MonsterDetailsFont, message,
                     new Vector2(drawX - 1 + tileWidth * 3 / 4, drawY - 1), Color.Black);
                 AppSpriteBatch.DrawString(MonsterDetailsFont, message,
@@ -243,6 +255,19 @@ namespace Desktop
             {
                 AppSpriteBatch.Draw(HpSprite, new Vector2(drawLeft + tileWidth * G.CameraWidth, drawTop + i * HpSprite.Height), Color.White);
             }
+
+            // Draw phase
+            string phaseMessage = "";
+            switch (G.CurrentPhase)
+            {
+                case Game.Game.TurnPhases.Enemy:
+                    phaseMessage = "Defence turn";
+                    break;
+                case Game.Game.TurnPhases.Player:
+                    phaseMessage = "Attack turn";
+                    break;
+            }
+            AppSpriteBatch.DrawString(StateFont, phaseMessage, new Vector2(20, 60), Color.White);
 
             AppSpriteBatch.End();
 

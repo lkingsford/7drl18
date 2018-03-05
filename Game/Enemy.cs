@@ -11,7 +11,7 @@ namespace Game
         {
         }
 
-        public override void DoTurn()
+        public void WhatYouWannaDo()
         {
             var player = game.Actors.FirstOrDefault(i => i is Player);
 
@@ -19,9 +19,20 @@ namespace Game
             {
                 var direction = player.Location - Location;
                 NextMove = (Action)(direction.Unit().X + 1 + ((direction.Unit().Y + 1) * 3));
-            }
 
-            base.DoTurn();
+                toAttack = ((Location + direction.Unit()) == player.Location);
+            }
+        }
+
+        private bool toAttack = false;
+
+        // Whether player will be attacked at end of this phase
+        public bool Attacking
+        {
+            get
+            {
+                return toAttack && !Stunned; 
+            }
         }
     }
 }

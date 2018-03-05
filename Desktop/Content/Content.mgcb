@@ -143,3 +143,10 @@
 /processorParam:TextureFormat=Compressed
 /build:UiElements/MonsterDisplay.spritefont
 
+#begin UiElements/TurnState.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:UiElements/TurnState.spritefont
+

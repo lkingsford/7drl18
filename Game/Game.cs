@@ -74,15 +74,6 @@ namespace Game
 
         private ContentManager Content;
 
-        ///// <summary>
-        ///// Active map is just the parts of the map that are currently active.
-        ///// May not be what's visible
-        ///// </summary>
-        //public MapTile[,] ActiveMap
-        //{
-
-        //}
-
         public enum TurnPhases { Player, Enemy };
 
         public TurnPhases CurrentPhase = TurnPhases.Player;
@@ -190,6 +181,22 @@ namespace Game
                 case TurnPhases.Player:
                     Player.DoTurn();
                     CurrentPhase = TurnPhases.Enemy;
+
+                    // Want to plan enemy actors before enemy turn
+                    foreach (var actor in VisibleActors)
+                    {
+                        if (actor != Player)
+                        {
+                            (actor as Enemy).WhatYouWannaDo();
+                        }
+                    }
+
+                    // If no enemies in sight, do their phase and go
+                    // straight back to the player one
+                    if (!VisibleActors.Any(i=>(i is Enemy)))
+                    {
+                        NextTurn();
+                    }
                     break;
 
                 case TurnPhases.Enemy:

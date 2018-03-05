@@ -73,7 +73,7 @@ namespace Game
                 // Stun longer, if you hit them into something
                 actor.Stun(1);
             }
-            actor.HP -= Math.Max(Momentum, 1);
+            actor.GotHit(Math.Max(Momentum, 1));
             actor.Stun(1);
         }
 

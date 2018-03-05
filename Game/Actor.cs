@@ -49,7 +49,7 @@ namespace Game
 
         protected virtual void Hit(Actor actor)
         {
-            actor.HP -= 1;
+            actor.GotHit(1);
         }
 
         public enum Action { NW, N, NE, W, Wait, E, SW, S, SE }

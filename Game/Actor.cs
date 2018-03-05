@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Game
@@ -26,11 +27,17 @@ namespace Game
         /// Attack, if there's somebody there
         /// </summary>
         /// <param name="dxDy">Amount to move</param>
-        public void Move(XY dxDy)
+        public virtual void Move(XY dxDy)
         {
             var newLocation = Location + dxDy;
 
-            if (newLocation.X > 0 &&
+            var occupier = game.Actors.FirstOrDefault(i => i != this && i.Location == newLocation);
+
+            if (occupier != null)
+            {
+                Hit(occupier);
+            }
+            else if (newLocation.X > 0 &&
                 newLocation.X < gameMap.GetLength(0) &&
                 newLocation.Y > 0 &&
                 newLocation.Y < gameMap.GetLength(1) &&
@@ -38,6 +45,11 @@ namespace Game
             {
                 Location = newLocation;
             }
+        }
+
+        protected virtual void Hit(Actor actor)
+        {
+            actor.HP -= 1;
         }
 
         public enum Action { NW, N, NE, W, Wait, E, SW, S, SE }
@@ -49,6 +61,12 @@ namespace Game
 
         public virtual void DoTurn()
         {
+            if (Stunned)
+            {
+                StunRemaining -= 1;
+                return;
+            }
+
             switch (NextMove)
             {
                 case Action.N:
@@ -81,7 +99,26 @@ namespace Game
             }
         }
 
-
         public int HP = 4;
+
+        public int StunRemaining = 0;
+
+        public bool Stunned
+        {
+            get
+            {
+                return StunRemaining > 0;
+            }
+        }
+
+        public void Stun(int turns)
+        {
+            StunRemaining += turns;
+        }
+
+        public virtual void GotHit(int damage)
+        {
+            HP -= damage;
+        }
     }
 }

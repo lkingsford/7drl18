@@ -54,11 +54,11 @@ namespace Game
                         Player = (Player)actor;
                         break;
                     case "bad":
-                        actor = new Actor(GlobalMap, this);
+                        actor = new Enemy(GlobalMap, this);
                         actor.Sprite = 1;
                         break;
                     case "knife":
-                        actor = new Actor(GlobalMap, this);
+                        actor = new Enemy(GlobalMap, this);
                         actor.Sprite = 2;
                         break;
                     default:
@@ -82,6 +82,10 @@ namespace Game
         //{
 
         //}
+
+        public enum TurnPhases { Player, Enemy };
+
+        public TurnPhases CurrentPhase = TurnPhases.Player;
 
         /// <summary>
         /// Whole map
@@ -181,9 +185,23 @@ namespace Game
         /// </summary>
         internal void NextTurn()
         {
-            foreach (var actor in VisibleActors)
+            switch (CurrentPhase)
             {
-                actor.DoTurn();
+                case TurnPhases.Player:
+                    Player.DoTurn();
+                    CurrentPhase = TurnPhases.Enemy;
+                    break;
+
+                case TurnPhases.Enemy:
+                    foreach (var actor in VisibleActors)
+                    {
+                        if (actor != Player)
+                        {
+                            actor.DoTurn();
+                        }
+                    }
+                    CurrentPhase = TurnPhases.Player;
+                    break;
             }
 
             // Kill dead actors

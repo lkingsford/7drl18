@@ -11,6 +11,25 @@ namespace Game
         {
         }
 
+        /// <summary>
+        /// Move the actor, if the dungeon allows it
+        /// Attack, if there's somebody there
+        /// </summary>
+        /// <param name="dxDy">Amount to move</param>
+        public override void Move(XY dxDy)
+        {
+            var newLocation = Location + dxDy;
+
+            if (newLocation.X > 0 &&
+                newLocation.X < gameMap.GetLength(0) &&
+                newLocation.Y > 0 &&
+                newLocation.Y < gameMap.GetLength(1) &&
+                (gameMap[newLocation.X, newLocation.Y].Walkable))
+            {
+                Location = newLocation;
+            }
+        }
+
         public int Momentum = 0;
         public int SpentMomentum = 0;
 
@@ -38,7 +57,7 @@ namespace Game
             SpentMomentum = 0;
         }
 
-        protected void Hit(Actor actor)
+        protected override void Hit(Actor actor)
         {
             var attackDirection = (this.Location - actor.Location).Unit();
             var actorStartingLocation = actor.Location;
@@ -51,8 +70,11 @@ namespace Game
             else
             {
                 Location = actorStartingLocation;
+                // Stun longer, if you hit them into something
+                actor.Stun(1);
             }
             actor.HP -= Math.Max(Momentum, 1);
+            actor.Stun(1);
         }
 
         /// <summary>
@@ -85,6 +107,12 @@ namespace Game
 
                 return result;
             }
+        }
+
+        public override void GotHit(int damage)
+        {
+            base.GotHit(damage);
+            ResetMomentum();
         }
     }
 }

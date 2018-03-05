@@ -214,9 +214,14 @@ namespace Desktop
                     Color.White);
 
                 // Draw HP
-                AppSpriteBatch.DrawString(MonsterDetailsFont, i.HP.ToString(),
+                var message = i.HP.ToString();
+                if (i.Stunned)
+                {
+                    message += " (Stunned)";
+                }
+                AppSpriteBatch.DrawString(MonsterDetailsFont, message,
                     new Vector2(drawX - 1 + tileWidth * 3 / 4, drawY - 1), Color.Black);
-                AppSpriteBatch.DrawString(MonsterDetailsFont, i.HP.ToString(),
+                AppSpriteBatch.DrawString(MonsterDetailsFont, message,
                     new Vector2(drawX + tileWidth * 3 / 4, drawY), Color.Red);
             }
 

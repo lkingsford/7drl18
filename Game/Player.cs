@@ -37,14 +37,25 @@ namespace Game
         {
             if (NextMove != null)
             {
-                if (FightTargets.ContainsKey(NextMove.Value))
+                // Player is differently controlled depending
+                // on atk or def phase
+                if (game.CurrentPhase == Game.TurnPhases.Player)
                 {
-                    Hit(FightTargets[NextMove.Value]);
+                    if (FightTargets.ContainsKey(NextMove.Value))
+                    {
+                        Hit(FightTargets[NextMove.Value]);
+                    }
+                    else
+                    {
+                        base.DoTurn();
+                        ResetMomentum();
+                    }
                 }
                 else
                 {
-                    base.DoTurn();
-                    ResetMomentum();
+                    // Defence phase
+                    // Can spend momentum to move away,
+                    // or move towards an attacking enemy to parry
                 }
             }
 
@@ -55,6 +66,15 @@ namespace Game
         {
             Momentum = 0;
             SpentMomentum = 0;
+        }
+
+        public void SpendMomentum()
+        {
+            if (Momentum > 0)
+            {
+                Momentum -= 1;
+                SpentMomentum += 1;
+            }
         }
 
         protected override void Hit(Actor actor)

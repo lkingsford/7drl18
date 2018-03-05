@@ -200,6 +200,9 @@ namespace Game
                     break;
 
                 case TurnPhases.Enemy:
+                    // Player can spend momentum to dodge or parry
+                    Player.DoTurn();
+
                     foreach (var actor in VisibleActors)
                     {
                         if (actor != Player)
@@ -211,7 +214,7 @@ namespace Game
                     break;
             }
 
-            // Kill dead actors
+            // Remove dead actors
             Actors.RemoveAll(i => i.HP <= 0);
         }
 

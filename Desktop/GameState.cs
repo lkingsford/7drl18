@@ -47,10 +47,16 @@ namespace Desktop
 
             MapTileSprites = AppContentManager.Load<Texture2D>("MapTiles");
             PCSprites = AppContentManager.Load<Texture2D>("CharacterSprites");
+            MomentumSprite = AppContentManager.Load<Texture2D>("UiElements/MomentumMarker");
+            SpentMomentumSprite = AppContentManager.Load<Texture2D>("UiElements/SpentMomentumMarker");
+            HpSprite = AppContentManager.Load<Texture2D>("UiElements/HpMarker");
         }
 
         Texture2D MapTileSprites;
         Texture2D PCSprites;
+        Texture2D MomentumSprite;
+        Texture2D SpentMomentumSprite;
+        Texture2D HpSprite;
 
         //GuiScreen oldScreen;
 
@@ -152,6 +158,8 @@ namespace Desktop
         }
 
         bool toggle = false; 
+        int drawLeft = 352;
+        int drawTop = 72;
 
         /// <summary>
         /// Draw this state
@@ -178,7 +186,7 @@ namespace Desktop
                 {
                     AppSpriteBatch.Draw(MapTileSprites,
                         // Dest
-                        new Rectangle(tileWidth * ix, tileHeight * iy, tileWidth, tileHeight),
+                        new Rectangle(drawLeft + tileWidth * ix, drawTop + tileHeight * iy, tileWidth, tileHeight),
                         // Src
                         new Rectangle(tileWidth * mapToDraw[ix, iy].DrawTile, 0, tileWidth, tileHeight),
                         Color.White);
@@ -189,12 +197,32 @@ namespace Desktop
             {
                 AppSpriteBatch.Draw(PCSprites,
                     //Dest
-                    new Rectangle(tileWidth * (i.Location.X - G.CameraTopLeft.X), tileHeight * (i.Location.Y - G.CameraTopLeft.Y), tileWidth, tileHeight),
+                    new Rectangle(drawLeft + tileWidth * (i.Location.X - G.CameraTopLeft.X),
+                                  drawTop + tileHeight * (i.Location.Y - G.CameraTopLeft.Y), tileWidth, tileHeight),
                     //Src
                     new Rectangle(i.Sprite * tileWidth, 0, tileWidth, tileHeight),
                     Color.White);
             }
 
+
+            var momentumTop = AppGraphicsDevice.Viewport.Height - drawTop;
+            // Draw player momentum
+            for (var i = 0; i < G.Player.SpentMomentum; ++i)
+            {
+                momentumTop -= SpentMomentumSprite.Height;
+                AppSpriteBatch.Draw(SpentMomentumSprite, new Vector2(drawLeft - SpentMomentumSprite.Width, momentumTop), Color.White);
+            }
+
+            for (var i = 0; i < G.Player.Momementum; ++i)
+            {
+                momentumTop -= MomentumSprite.Height;
+                AppSpriteBatch.Draw(MomentumSprite, new Vector2(drawLeft - MomentumSprite.Width, momentumTop), Color.White);
+            }
+
+            for (var i = 0; i < G.Player.HP; ++i)
+            {
+                AppSpriteBatch.Draw(HpSprite, new Vector2(drawLeft + tileWidth * G.CameraWidth, drawTop + i * HpSprite.Height), Color.White);
+            }
             AppSpriteBatch.End();
 
 //            gui.Draw(GameTime);

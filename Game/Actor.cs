@@ -37,5 +37,6 @@ namespace Game
                 Location = newLocation;
             }
         }
+        public int HP = 4;
     }
 }

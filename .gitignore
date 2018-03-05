@@ -231,3 +231,6 @@ _Pvt_Extensions
 # From Jquery .gitignore
 .DS_store
 *.sw*
+
+# The working assets
+Source Assets/*

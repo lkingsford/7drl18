@@ -41,9 +41,17 @@ namespace Game
         protected void Hit(Actor actor)
         {
             var attackDirection = (this.Location - actor.Location).Unit();
-            this.Location = actor.Location;
+            var actorStartingLocation = actor.Location;
             this.Momentum += 1;
             actor.Move(-1 * attackDirection);
+            if (actorStartingLocation == actor.Location)
+            {
+                Location = actorStartingLocation + attackDirection;
+            }
+            else
+            {
+                Location = actorStartingLocation;
+            }
             actor.HP -= Math.Max(Momentum, 1);
         }
 

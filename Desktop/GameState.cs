@@ -121,43 +121,49 @@ namespace Desktop
                 case Keys.H:
                 case Keys.Left:
                 case Keys.NumPad4:
-                    G.Player.Move(new XY(-1, 0));
+                    G.Player.NextMove = Player.Action.W;
                     break;
                 case Keys.K:
                 case Keys.Up:
                 case Keys.NumPad8:
-                    G.Player.Move(new XY(0, -1));
+                    G.Player.NextMove = Player.Action.N;
                     break;
                 case Keys.L:
                 case Keys.Right:
                 case Keys.NumPad6:
-                    G.Player.Move(new XY(1, 0));
+                    G.Player.NextMove = Player.Action.E;
                     break;
                 case Keys.J:
                 case Keys.Down:
                 case Keys.NumPad2:
-                    G.Player.Move(new XY(0, 1));
+                    G.Player.NextMove = Player.Action.S;
                     break;
                 case Keys.Y:
                 case Keys.NumPad7:
-                    G.Player.Move(new XY(-1, -1));
+                    G.Player.NextMove = Player.Action.NW;
                     break;
                 case Keys.U:
                 case Keys.NumPad9:
-                    G.Player.Move(new XY(1, -1));
+                    G.Player.NextMove = Player.Action.NE;
                     break;
                 case Keys.B:
                 case Keys.NumPad1:
-                    G.Player.Move(new XY(-1, 1));
+                    G.Player.NextMove = Player.Action.SW;
                     break;
                 case Keys.N:
                 case Keys.NumPad3:
-                    G.Player.Move(new XY(1, 1));
+                    G.Player.NextMove = Player.Action.SE;
                     break;
+            }
+
+            if (G.Player.NextMove != null)
+            {
+                G.NextTurn();
             }
         }
 
-        bool toggle = false; 
+        bool toggle = false;
+
         int drawLeft = 352;
         int drawTop = 72;
 
@@ -223,6 +229,7 @@ namespace Desktop
             {
                 AppSpriteBatch.Draw(HpSprite, new Vector2(drawLeft + tileWidth * G.CameraWidth, drawTop + i * HpSprite.Height), Color.White);
             }
+
             AppSpriteBatch.End();
 
 //            gui.Draw(GameTime);

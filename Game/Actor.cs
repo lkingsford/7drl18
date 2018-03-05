@@ -37,6 +37,12 @@ namespace Game
                 Location = newLocation;
             }
         }
+
+        public virtual void DoTurn()
+        {
+
+        }
+
         public int HP = 4;
     }
 }

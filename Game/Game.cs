@@ -176,6 +176,17 @@ namespace Game
             }
         }
 
+        /// <summary>
+        /// Do the next turn
+        /// </summary>
+        internal void NextTurn()
+        {
+            foreach (var actor in VisibleActors)
+            {
+                actor.DoTurn();
+            }
+        }
+
         public XY ActiveTopLeft
         {
             get

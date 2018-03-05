@@ -1,58 +1,82 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Game
 {
     public class Player : Actor
     {
-        public Player(MapTile[,] globalMap) : base(globalMap)
+        public Player(MapTile[,] globalMap, Game game) : base(globalMap, game)
         {
         }
 
-        public int Momementum = 4;
-        public int SpentMomentum = 3;
-
-        public enum Action { N, NE, E, SE, S, SW, W, NW };
-
-        /// <summary>
-        /// NextMove is set if the player has selected an action
-        /// </summary>
-        public Action? NextMove = null;
+        public int Momentum = 0;
+        public int SpentMomentum = 0;
 
         public override void DoTurn()
         {
-            switch (NextMove)
+            if (NextMove != null)
             {
-                case Action.N:
-                    Move(new XY(0, -1));
-                    break;
-                case Action.NE:
-                    Move(new XY(1, -1));
-                    break;
-                case Action.E:
-                    Move(new XY(1, 0));
-                    break;
-                case Action.SE:
-                    Move(new XY(1, 1));
-                    break;
-                case Action.S:
-                    Move(new XY(0, 1));
-                    break;
-                case Action.SW:
-                    Move(new XY(-1, 1));
-                    break;
-                case Action.W:
-                    Move(new XY(-1, 0));
-                    break;
-                case Action.NW:
-                    Move(new XY(-1, -1));
-                    break;
-                default:
-                    break;
-                    // Do nothing... for now
+                if (FightTargets.ContainsKey(NextMove.Value))
+                {
+                    Hit(FightTargets[NextMove.Value]);
+                }
+                else
+                {
+                    base.DoTurn();
+                    ResetMomentum();
+                }
             }
+
             NextMove = null;
+        }
+
+        private void ResetMomentum()
+        {
+            Momentum = 0;
+            SpentMomentum = 0;
+        }
+
+        protected void Hit(Actor actor)
+        {
+            var attackDirection = (this.Location - actor.Location).Unit();
+            this.Location = actor.Location;
+            this.Momentum += 1;
+            actor.Move(-1 * attackDirection);
+            actor.HP -= Math.Max(Momentum, 1);
+        }
+
+        /// <summary>
+        /// Who will be fought if going in each direction 
+        /// </summary>
+        public Dictionary<Action, Actor> FightTargets
+        {
+            get
+            {
+                var result = new Dictionary<Action, Actor>();
+
+                // Walk in each direction up to 4 spaces until
+                // run into somebody
+                for (int ix = -1; ix <= 1; ix++)
+                {
+                    for (int iy = -1; iy <= 1; iy++)
+                    {
+                        for (int z = 1; z <= 4; z++)
+                        {
+                            var location = z * (new XY(ix, iy)) + Location;
+                            var firstbad = game.Actors.FirstOrDefault(i => i != this && i.Location == location);
+                            if (firstbad != null)
+                            {
+                                result[(Action)(ix + 1 + ((iy + 1) * 3))] = firstbad;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                return result;
+            }
         }
     }
 }

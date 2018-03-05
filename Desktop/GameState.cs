@@ -50,6 +50,7 @@ namespace Desktop
             MomentumSprite = AppContentManager.Load<Texture2D>("UiElements/MomentumMarker");
             SpentMomentumSprite = AppContentManager.Load<Texture2D>("UiElements/SpentMomentumMarker");
             HpSprite = AppContentManager.Load<Texture2D>("UiElements/HpMarker");
+            MonsterDetailsFont = AppContentManager.Load<SpriteFont>("UiElements/MonsterDisplay");
         }
 
         Texture2D MapTileSprites;
@@ -57,6 +58,8 @@ namespace Desktop
         Texture2D MomentumSprite;
         Texture2D SpentMomentumSprite;
         Texture2D HpSprite;
+
+        SpriteFont MonsterDetailsFont;
 
         //GuiScreen oldScreen;
 
@@ -201,15 +204,21 @@ namespace Desktop
 
             foreach (var i in G.VisibleActors)
             {
+                var drawX = drawLeft + tileWidth * (i.Location.X - G.CameraTopLeft.X);
+                var drawY = drawTop + tileHeight * (i.Location.Y - G.CameraTopLeft.Y);
                 AppSpriteBatch.Draw(PCSprites,
                     //Dest
-                    new Rectangle(drawLeft + tileWidth * (i.Location.X - G.CameraTopLeft.X),
-                                  drawTop + tileHeight * (i.Location.Y - G.CameraTopLeft.Y), tileWidth, tileHeight),
+                    new Rectangle(drawX, drawY, tileWidth, tileHeight),
                     //Src
                     new Rectangle(i.Sprite * tileWidth, 0, tileWidth, tileHeight),
                     Color.White);
-            }
 
+                // Draw HP
+                AppSpriteBatch.DrawString(MonsterDetailsFont, i.HP.ToString(),
+                    new Vector2(drawX - 1 + tileWidth * 3 / 4, drawY - 1), Color.Black);
+                AppSpriteBatch.DrawString(MonsterDetailsFont, i.HP.ToString(),
+                    new Vector2(drawX + tileWidth * 3 / 4, drawY), Color.Red);
+            }
 
             var momentumTop = AppGraphicsDevice.Viewport.Height - drawTop;
             // Draw player momentum
@@ -219,7 +228,7 @@ namespace Desktop
                 AppSpriteBatch.Draw(SpentMomentumSprite, new Vector2(drawLeft - SpentMomentumSprite.Width, momentumTop), Color.White);
             }
 
-            for (var i = 0; i < G.Player.Momementum; ++i)
+            for (var i = 0; i < G.Player.Momentum; ++i)
             {
                 momentumTop -= MomentumSprite.Height;
                 AppSpriteBatch.Draw(MomentumSprite, new Vector2(drawLeft - MomentumSprite.Width, momentumTop), Color.White);

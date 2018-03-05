@@ -98,6 +98,29 @@ namespace Game
             return new XY(first.X - second.X, first.Y - second.Y);
         }
 
+
+        /// <summary>
+        /// Multiply XY by a scalar
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        public static XY operator *(XY first, int second)
+        {
+            return new XY(first.X * second, first.Y * second);
+        }
+
+        /// <summary>
+        /// Multiply XY by a scalar
+        /// </summary>
+        /// <param name="second"></param>
+        /// <param name="first"></param>
+        /// <returns></returns>
+        public static XY operator *(int first, XY second)
+        {
+            return new XY(second.X * first, second.Y * first);
+        }
+
         /// <summary>
         /// Equality operator for XY
         /// </summary>
@@ -140,5 +163,14 @@ namespace Game
             return !(first == second);
         }
 
+        /// <summary>
+        /// Return like a unit vector, but X and Y are both a -1, 0 or 1
+        /// depending on if that element is positive, 0 or negative
+        /// </summary>
+        /// <returns></returns>
+        public XY Unit()
+        {
+            return new XY(Math.Sign(X), Math.Sign(Y));
+        }
     }
 }

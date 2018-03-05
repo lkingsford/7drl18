@@ -136,3 +136,10 @@
 /processorParam:TextureFormat=Color
 /build:UiElements/SpentMomentumMarker.png
 
+#begin UiElements/MonsterDisplay.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:UiElements/MonsterDisplay.spritefont
+

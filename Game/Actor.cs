@@ -13,10 +13,12 @@ namespace Game
         public int Sprite = 0;
 
         protected MapTile[,] gameMap;
+        protected Game game;
 
-        public Actor(MapTile[,] globalMap)
+        public Actor(MapTile[,] globalMap, Game game)
         {
-            gameMap = globalMap; 
+            gameMap = globalMap;
+            this.game = game;
         }
 
         /// <summary>
@@ -38,10 +40,47 @@ namespace Game
             }
         }
 
+        public enum Action { NW, N, NE, W, Wait, E, SW, S, SE }
+
+        /// <summary>
+        /// NextMove is set if the actor has selected an action
+        /// </summary>
+        public Action? NextMove = null;
+
         public virtual void DoTurn()
         {
-
+            switch (NextMove)
+            {
+                case Action.N:
+                    Move(new XY(0, -1));
+                    break;
+                case Action.NE:
+                    Move(new XY(1, -1));
+                    break;
+                case Action.E:
+                    Move(new XY(1, 0));
+                    break;
+                case Action.SE:
+                    Move(new XY(1, 1));
+                    break;
+                case Action.S:
+                    Move(new XY(0, 1));
+                    break;
+                case Action.SW:
+                    Move(new XY(-1, 1));
+                    break;
+                case Action.W:
+                    Move(new XY(-1, 0));
+                    break;
+                case Action.NW:
+                    Move(new XY(-1, -1));
+                    break;
+                default:
+                    break;
+                    // Do nothing... for now
+            }
         }
+
 
         public int HP = 4;
     }

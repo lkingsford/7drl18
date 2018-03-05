@@ -50,15 +50,15 @@ namespace Game
                 switch (o.Name)
                 {
                     case "pc":
-                        actor = new Player(GlobalMap);
+                        actor = new Player(GlobalMap, this);
                         Player = (Player)actor;
                         break;
                     case "bad":
-                        actor = new Actor(GlobalMap);
+                        actor = new Actor(GlobalMap, this);
                         actor.Sprite = 1;
                         break;
                     case "knife":
-                        actor = new Actor(GlobalMap);
+                        actor = new Actor(GlobalMap, this);
                         actor.Sprite = 2;
                         break;
                     default:
@@ -185,6 +185,9 @@ namespace Game
             {
                 actor.DoTurn();
             }
+
+            // Kill dead actors
+            Actors.RemoveAll(i => i.HP <= 0);
         }
 
         public XY ActiveTopLeft

@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Actor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BrokenRulesException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enemy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalRandom.cs" />

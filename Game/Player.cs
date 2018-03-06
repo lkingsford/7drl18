@@ -54,8 +54,62 @@ namespace Game
                 else
                 {
                     // Defence phase
-                    // Can spend momentum to move away,
-                    // or move towards an attacking enemy to parry
+                    // Can spend momentum to move away, or wait to parry
+
+                    if (DefenceAllowedMoves.Contains(NextMove.Value))
+                    {
+                        if (NextMove.Value == Action.Parry)
+                        {
+                            // Parry
+                            var toParry = CanParry();
+                            if (Momentum > toParry.Count())
+                            {
+                                SpendMomentum(toParry.Count());
+                                foreach (var baddie in toParry)
+                                {
+                                    Hit(baddie);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (Momentum >= 1)
+                            {
+                                SpendMomentum(1);
+                                // Dodge
+                                switch (NextMove.Value)
+                                {
+                                    case Action.N:
+                                        Move(new XY(0, -1));
+                                        break;
+                                    case Action.NE:
+                                        Move(new XY(1, -1));
+                                        break;
+                                    case Action.E:
+                                        Move(new XY(1, 0));
+                                        break;
+                                    case Action.SE:
+                                        Move(new XY(1, 1));
+                                        break;
+                                    case Action.S:
+                                        Move(new XY(0, 1));
+                                        break;
+                                    case Action.SW:
+                                        Move(new XY(-1, 1));
+                                        break;
+                                    case Action.W:
+                                        Move(new XY(-1, 0));
+                                        break;
+                                    case Action.NW:
+                                        Move(new XY(-1, -1));
+                                        break;
+                                    default:
+                                        break;
+                                        // Do nothing... for now
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -68,12 +122,16 @@ namespace Game
             SpentMomentum = 0;
         }
 
-        public void SpendMomentum()
+        public void SpendMomentum(int amt)
         {
-            if (Momentum > 0)
+            if (amt <= Momentum)
             {
-                Momentum -= 1;
-                SpentMomentum += 1;
+                Momentum -= amt;
+                SpentMomentum += amt;
+            }
+            else
+            {
+                throw new BrokenRulesException("Spent more momentum then had");
             }
         }
 
@@ -83,13 +141,24 @@ namespace Game
             var actorStartingLocation = actor.Location;
             this.Momentum += 1;
             actor.Move(-1 * attackDirection);
+            if (game.CurrentPhase == Game.TurnPhases.Enemy)
+            {
+                // Cancel attack move - 'cause parried (most likely)
+                actor.NextMove = Action.Wait;
+            }
             if (actorStartingLocation == actor.Location)
             {
-                Location = actorStartingLocation + attackDirection;
+                if (game.CurrentPhase == Game.TurnPhases.Player)
+                {
+                    Location = actorStartingLocation + attackDirection;
+                }
             }
             else
             {
-                Location = actorStartingLocation;
+                if (game.CurrentPhase == Game.TurnPhases.Player)
+                {
+                    Location = actorStartingLocation;
+                }
                 // Stun longer, if you hit them into something
                 actor.Stun(1);
             }
@@ -127,6 +196,58 @@ namespace Game
 
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Moves allowed in defence mode 
+        /// </summary>
+        public HashSet<Action> DefenceAllowedMoves
+        {
+            get
+            {
+                var result = new HashSet<Action>();
+                for (int ix = -1; ix <= 1; ix++)
+                {
+                    for (int iy = -1; iy <= 1; iy++)
+                    {
+                        if (ix == 0 && iy == 0)
+                        {
+                            break;
+                        }
+
+                        var location = Location + new XY(ix, iy);
+                        var firstbad = game.Actors.FirstOrDefault(i => i != this && i.Location == location);
+                        if (firstbad != null && ((firstbad as Enemy)?.Attacking ?? false))
+                        {
+                            // Attacking from a dir, so can go backwards - if nobody there
+                            // Invert ix and iy to get allowed direction
+                            var travelLocation = Location - new XY(ix, iy);
+                            if (!game.Actors.Any(i => i != this && i.Location == travelLocation))
+                            {
+                                // If nobody there
+                                result.Add((Action)(-ix + 1 + ((-iy + 1) * 3)));
+                            }
+                        }
+                    }
+                }
+
+                // Parry allowed
+                if (CanParry().Count > 0 && Momentum > CanParry().Count)
+                {
+                    result.Add(Action.Parry);
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Dudes who can get parried
+        /// </summary>
+        /// <returns></returns>
+        public List<Actor> CanParry()
+        {
+            return game.Actors.Where(i => (i as Enemy)?.Attacking ?? false && Location.Adjacent(i.Location)).ToList();
         }
 
         public override void GotHit(int damage)

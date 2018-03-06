@@ -52,7 +52,9 @@ namespace Game
             actor.GotHit(dmg);
         }
 
-        public enum Action { NW, N, NE, W, Wait, E, SW, S, SE }
+        public enum Action { NW, N, NE, W, Wait, E, SW, S, SE,
+            Parry
+        }
 
         /// <summary>
         /// NextMove is set if the actor has selected an action

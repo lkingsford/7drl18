@@ -38,16 +38,19 @@ namespace Game
         protected override void Hit(Actor actor, int dmg = 1)
         {
             toAttack = false;
-            // Enemy pushes away when hitting
-            var attackDirection = (this.Location - actor.Location).Unit();
-            var actorStartingLocation = actor.Location;
-            actor.Move(-1 * attackDirection);
-            if (actorStartingLocation != actor.Location)
+            if (actor.Location.Adjacent(Location))
             {
-                // More damage, if hit into something
-                dmg += 1;
+                // Enemy pushes away when hitting
+                var attackDirection = (this.Location - actor.Location).Unit();
+                var actorStartingLocation = actor.Location;
+                actor.Move(-1 * attackDirection);
+                if (actorStartingLocation != actor.Location)
+                {
+                    // More damage, if hit into something
+                    dmg += 1;
+                }
+                base.Hit(actor, dmg);
             }
-            base.Hit(actor, dmg);
         }
     }
 }

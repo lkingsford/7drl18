@@ -161,6 +161,24 @@ namespace Desktop
                     break;
                 case Keys.NumPad5:
                 case Keys.Space:
+                    if (G.CurrentPhase == Game.Game.TurnPhases.Player)
+                    {
+                        G.Player.NextMove = Player.Action.Wait;
+                    }
+                    else
+                    {
+                        if (G.Player.DefenceAllowedMoves.Contains(Actor.Action.Parry))
+                        {
+                            G.Player.NextMove = Player.Action.Parry;
+                        }
+                        else
+                        {
+                            G.Player.NextMove = Player.Action.Wait;
+                        }
+                    }
+                    break;
+                case Keys.OemPeriod:
+                case Keys.Decimal:
                     G.Player.NextMove = Player.Action.Wait;
                     break;
             }

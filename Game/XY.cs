@@ -67,6 +67,11 @@ namespace Game
             return _X >= MinX && MaxX >= _X && _Y >= MinY && MaxY >= _Y;
         }
 
+        public bool Adjacent(XY second)
+        {
+            return Math.Abs(X - second.X) <= 1 && Math.Abs(Y - second.Y) <= 1;
+        }
+
         /// <summary>
         /// Return coordinates as a string
         /// </summary>

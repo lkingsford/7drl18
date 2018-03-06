@@ -22,11 +22,13 @@ Mordor style combat into the turn based space.
 - Each time attacked remove momentum
 - Get attacked pushes away
 - If pushed into wall, additional damage
+- May spend 1 momentum to move away from attack direction
+- May spend X momentum to parry (X = amount of attacks)
 
 ## Other rules
 - If no enemies in sight, move freely
 
-## To be implemented
-- If getting attacked:
-	- May spend 1 momentum to move away from attack direction
-	- May spend X momentum to parry (X = amount of attacks)
+
+# Todo list
+[ ] *BUG:* Instakill on parry
+[ ] *BUG:* Can dodge into overlap

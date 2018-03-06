@@ -134,6 +134,14 @@ namespace Game
         /// <returns></returns>
         public static bool operator ==(XY first, XY second)
         {
+            if (ReferenceEquals(first, null) ^ ReferenceEquals(second, null))
+            {
+                return false;
+            }
+            if (ReferenceEquals(first, null) && ReferenceEquals(second, null))
+            {
+                return true;
+            }
             return (first.X == second.X) && (first.Y == second.Y);
         }
 

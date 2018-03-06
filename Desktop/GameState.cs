@@ -50,8 +50,12 @@ namespace Desktop
             MomentumSprite = AppContentManager.Load<Texture2D>("UiElements/MomentumMarker");
             SpentMomentumSprite = AppContentManager.Load<Texture2D>("UiElements/SpentMomentumMarker");
             HpSprite = AppContentManager.Load<Texture2D>("UiElements/HpMarker");
+            MovementArrowsSprite = AppContentManager.Load<Texture2D>("UiElements/Arrows");
             MonsterDetailsFont = AppContentManager.Load<SpriteFont>("UiElements/MonsterDisplay");
             StateFont = AppContentManager.Load<SpriteFont>("UiElements/TurnState");
+
+            arrowWidth = MovementArrowsSprite.Width / 9;
+            arrowHeight = MovementArrowsSprite.Height / 3;
         }
 
         Texture2D MapTileSprites;
@@ -59,9 +63,12 @@ namespace Desktop
         Texture2D MomentumSprite;
         Texture2D SpentMomentumSprite;
         Texture2D HpSprite;
+        Texture2D MovementArrowsSprite;
 
         SpriteFont MonsterDetailsFont;
         SpriteFont StateFont;
+        private int arrowWidth;
+        private int arrowHeight;
 
         //GuiScreen oldScreen;
 
@@ -194,6 +201,8 @@ namespace Desktop
         int drawLeft = 352;
         int drawTop = 72;
 
+        XY actionDrawLocation = new XY(20, 300);
+
         /// <summary>
         /// Draw this state
         /// </summary>
@@ -284,6 +293,113 @@ namespace Desktop
                 case Game.Game.TurnPhases.Player:
                     phaseMessage = "Attack turn";
                     break;
+            }
+
+            // Draw allowed moves
+            bool addWait = false;
+            for (var ix = 0; ix <= 2; ++ix)
+            {
+                for (var iy = 0; iy <= 2; ++iy)
+                {
+                    int whatWillDo = 0;
+                    // 0: Nothing
+                    // 1: Walk
+                    // 2: Attack
+                    // 3: Wait
+                    // 4: Parry
+                    // 5: Dodge
+
+                    var action = (Actor.Action)(ix + iy * 3);
+                    var newLocation = G.Player.Location + new XY(ix, iy);
+
+                    if (G.CurrentPhase == Game.Game.TurnPhases.Player)
+                    {
+                        if (G.Player.CanWalk(newLocation))
+                        {
+                            whatWillDo = 1;
+                        }
+                        if (G.Player.FightTargets.ContainsKey(action))
+                        {
+                            whatWillDo = 2;
+                        }
+                        if (ix == 1 && iy == 1)
+                        {
+                            whatWillDo = 3;
+                        }
+                    }
+                    else
+                    {
+                        var defMoves = G.Player.DefenceAllowedMoves;
+                        if (ix == 1 && iy == 1)
+                        {
+                            if (defMoves.Contains(Actor.Action.Parry))
+                            {
+                                whatWillDo = 4;
+                                addWait = true;
+                            }
+                        }
+                        else
+                        {
+                            if (defMoves.Contains(action))
+                            {
+                                whatWillDo = 5;
+                            }
+                        }
+                    }
+
+
+                    var horizPosition = (ix + iy * 3 + 1 - ((ix + iy * 3) > 3 ? 1 : 0));
+
+                    XY pos = null;
+
+                    switch (whatWillDo)
+                    {
+                        case 0:
+                            pos = new XY(0, 2);
+                            break;
+                        case 1:
+                            pos = new XY(horizPosition, 0);
+                            break;
+                        case 2:
+                            pos = new XY(horizPosition, 1);
+                            break;
+                        case 3:
+                            pos = new XY(0, 0);
+                            break;
+                        case 4:
+                            pos = new XY(0, 1);
+                            break;
+                        case 5:
+                            pos = new XY(horizPosition, 2);
+                            break;
+                    }
+
+                    if (pos != null)
+                    {
+                        AppSpriteBatch.Draw(MovementArrowsSprite,
+                            //Dest
+                            new Rectangle(actionDrawLocation.X + arrowWidth * ix, actionDrawLocation.Y + arrowHeight * iy, arrowWidth, arrowHeight),
+                            //Source
+                            new Rectangle(pos.X * arrowWidth, pos.Y * arrowHeight, arrowWidth, arrowHeight),
+                            Color.White);
+                    }
+                }
+
+            }
+            if (addWait)
+            {
+                XY pos = new XY(0, 0);
+                var ix = 2;
+                var iy = 3;
+                if (pos != null)
+                {
+                    AppSpriteBatch.Draw(MovementArrowsSprite,
+                        //Dest
+                        new Rectangle(actionDrawLocation.X + arrowWidth * ix, actionDrawLocation.Y + arrowHeight * iy, arrowWidth, arrowHeight),
+                        //Source
+                        new Rectangle(pos.X * arrowWidth, pos.Y * arrowHeight, arrowWidth, arrowHeight),
+                        Color.White);
+                }
             }
             AppSpriteBatch.DrawString(StateFont, phaseMessage, new Vector2(20, 60), Color.White);
 

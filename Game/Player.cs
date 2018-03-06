@@ -20,11 +20,7 @@ namespace Game
         {
             var newLocation = Location + dxDy;
 
-            if (newLocation.X > 0 &&
-                newLocation.X < gameMap.GetLength(0) &&
-                newLocation.Y > 0 &&
-                newLocation.Y < gameMap.GetLength(1) &&
-                (gameMap[newLocation.X, newLocation.Y].Walkable))
+            if (CanWalk(newLocation))
             {
                 Location = newLocation;
             }
@@ -248,6 +244,15 @@ namespace Game
         public List<Actor> CanParry()
         {
             return game.Actors.Where(i => (i as Enemy)?.Attacking ?? false && Location.Adjacent(i.Location)).ToList();
+        }
+
+        public bool CanWalk(XY newLocation)
+        {
+            return newLocation.X > 0 &&
+                newLocation.X < gameMap.GetLength(0) &&
+                newLocation.Y > 0 &&
+                newLocation.Y < gameMap.GetLength(1) &&
+                (gameMap[newLocation.X, newLocation.Y].Walkable);
         }
 
         public override void GotHit(int damage)

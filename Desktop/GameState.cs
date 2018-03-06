@@ -226,11 +226,13 @@ namespace Desktop
             {
                 for (var iy = 0; iy < G.CameraHeight; ++iy)
                 {
+                    var srcX = tileWidth * (mapToDraw[ix, iy].DrawTile % G.tiledTileset.Columns);
+                    var srcY = tileHeight * (mapToDraw[ix, iy].DrawTile / G.tiledTileset.Columns);
                     AppSpriteBatch.Draw(MapTileSprites,
                         // Dest
                         new Rectangle(drawLeft + tileWidth * ix, drawTop + tileHeight * iy, tileWidth, tileHeight),
                         // Src
-                        new Rectangle(tileWidth * mapToDraw[ix, iy].DrawTile, 0, tileWidth, tileHeight),
+                        new Rectangle(srcX, srcY, tileWidth, tileHeight),
                         Color.White);
                 }
             }

@@ -30,7 +30,7 @@ namespace Game
                     var tileId = map.TileLayers[0].Tiles[ix + iy * MapWidth].GlobalIdentifier;
                     string walkableValue = null;
 
-                    var tiledTileset = map.GetTilesetByTileGlobalIdentifier(tileId);
+                    tiledTileset = map.GetTilesetByTileGlobalIdentifier(tileId);
                     var tiledTile = tiledTileset.Tiles[tileId - tiledTileset.FirstGlobalIdentifier];
                     tiledTile?.Properties.TryGetValue("walkable", out walkableValue);
                     var walkable = walkableValue != null ? walkableValue == "true" : false;
@@ -225,6 +225,8 @@ namespace Game
                 return new XY(0, 0);
             }
         }
+
+        public TiledMapTileset tiledTileset { get; private set; }
 
         public Player Player;
     }

@@ -185,7 +185,7 @@ namespace Game
                     // Want to plan enemy actors before enemy turn
                     foreach (var actor in VisibleActors)
                     {
-                        if (actor != Player)
+                        if (actor != Player && !actor.Stunned)
                         {
                             (actor as Enemy).WhatYouWannaDo();
                         }
@@ -201,7 +201,7 @@ namespace Game
 
                 case TurnPhases.Enemy:
                     // Player can spend momentum to dodge or parry
-                    Player.DoTurn();
+                    //Player.DoTurn();
 
                     foreach (var actor in VisibleActors)
                     {

@@ -77,7 +77,7 @@ namespace Game
             }
         }
 
-        protected override void Hit(Actor actor)
+        protected override void Hit(Actor actor, int dmg = 1)
         {
             var attackDirection = (this.Location - actor.Location).Unit();
             var actorStartingLocation = actor.Location;

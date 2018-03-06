@@ -47,9 +47,9 @@ namespace Game
             }
         }
 
-        protected virtual void Hit(Actor actor)
+        protected virtual void Hit(Actor actor, int dmg = 1)
         {
-            actor.GotHit(1);
+            actor.GotHit(dmg);
         }
 
         public enum Action { NW, N, NE, W, Wait, E, SW, S, SE }

@@ -72,28 +72,8 @@ namespace Game
             }
 
             // Generate metamap
-            Metamap = new HashSet<MetamapTile>[32, 32];
-            for (var ix = 0; ix < Metamap.GetLength(0); ++ix)
-            {
-                for (var iy = 0; iy < Metamap.GetLength(1); ++iy)
-                {
-                    Metamap[ix, iy] = new HashSet<MetamapTile>();
-                }
-            }
 
-                    for (var ix = 0; ix <= 13; ++ix)
-            {
-                Metamap[ix, 12].Add(MetamapTile.MajorRoadEast);
-                Metamap[ix, 12].Add(MetamapTile.MajorRoadWest);
-            }
-
-            for (var iy = 0; iy <= 13; ++iy)
-            {
-                Metamap[12, iy].Add(MetamapTile.PathNorth);
-                Metamap[12, iy].Add(MetamapTile.PathSouth);
-                Metamap[2, iy].Add(MetamapTile.MinorRoadNorth);
-                Metamap[2, iy].Add(MetamapTile.MinorRoadSouth);
-            }
+            GenerateMetamap();
         }
 
         private ContentManager Content;
@@ -147,6 +127,7 @@ namespace Game
             }
         }
 
+        // Don't mess with order - playing nasty casting tricks
         public enum MetamapTile { MajorRoadNorth, MajorRoadEast, MajorRoadWest, MajorRoadSouth, MinorRoadNorth, MinorRoadEast, MinorRoadWest, MinorRoadSouth, PathNorth, PathEast, PathWest, PathSouth };
 
         /// <summary>
@@ -261,5 +242,185 @@ namespace Game
         public TiledMapTileset tiledTileset { get; private set; }
 
         public Player Player;
+
+        /// <summary>
+        /// Generate the map to base prefabs off
+        /// </summary>
+        private void GenerateMetamap()
+        {
+            Metamap = new HashSet<MetamapTile>[32, 32];
+            for (var ix = 0; ix < Metamap.GetLength(0); ++ix)
+            {
+                for (var iy = 0; iy < Metamap.GetLength(1); ++iy)
+                {
+                    Metamap[ix, iy] = new HashSet<MetamapTile>();
+                }
+            }
+
+
+            var middle = new XY(Metamap.GetLength(0) / 2, Metamap.GetLength(1) / 2);
+            Road(middle, new XY(1, 0), 0, 2, 0.9);
+            while (MetamapOccupied() < 80)
+            {
+                var canDoList = new List<XY>();
+                for (var ix = 0; ix < Metamap.GetLength(0); ++ix)
+                {
+                    for (var iy = 0; iy < Metamap.GetLength(1); ++iy)
+                    {
+                        if (Metamap[ix, iy].Count > 0)
+                        {
+                            canDoList.Add(new XY(ix, iy));
+                        }
+                    }
+                }
+                if (canDoList.Count > 0)
+                {
+                    var goFrom = canDoList.RandomItem();
+                    var goFromTile = Metamap[goFrom.X, goFrom.Y];
+
+                    if (!(goFromTile.Contains(MetamapTile.MajorRoadEast) || goFromTile.Contains(MetamapTile.MinorRoadEast) || goFromTile.Contains(MetamapTile.PathEast)))
+                    {
+                        Road(canDoList.RandomItem(), new XY(1, 0), 0, 2, 0.8, true);
+                    }
+
+                    if (!(goFromTile.Contains(MetamapTile.MajorRoadWest) || goFromTile.Contains(MetamapTile.MinorRoadWest) || goFromTile.Contains(MetamapTile.PathWest)))
+                    {
+                        Road(canDoList.RandomItem(), new XY(-1, 0), 0, 2, 0.8, true);
+                    }
+
+                    if (!(goFromTile.Contains(MetamapTile.MajorRoadNorth) || goFromTile.Contains(MetamapTile.MinorRoadNorth) || goFromTile.Contains(MetamapTile.PathNorth)))
+                    {
+                        Road(canDoList.RandomItem(), new XY(0, -1), 0, 2, 0.8, true);
+                    }
+
+                    if (!(goFromTile.Contains(MetamapTile.MajorRoadSouth) || goFromTile.Contains(MetamapTile.MinorRoadSouth) || goFromTile.Contains(MetamapTile.PathSouth)))
+                    {
+                        Road(canDoList.RandomItem(), new XY(0, 1), 0, 2, 0.8, true);
+                    }
+                }
+                else
+                {
+                    GenerateMetamap();
+                }
+            }
+        }
+
+        private int MetamapOccupied()
+        {
+            int count = 0;
+            for (var ix = 0; ix < Metamap.GetLength(0); ++ix)
+            {
+                for (var iy = 0; iy < Metamap.GetLength(1); ++iy)
+                {
+                    if (Metamap[ix, iy].Count > 0)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startPoint"></param>
+        /// <param name="dxdy">Desired direction</param>
+        /// <param name="maxMajor">Roads can spawn same or smaller</param>
+        /// <param name="startRoadChance"></param>
+        private void Road(XY thisPoint, XY dxdy, int windy, int majorness, double keepGoingChance = 0.8, bool forceGo = false)
+        {
+            if (forceGo || keepGoingChance > GlobalRandom.NextDouble())
+            {
+                if (windy != 1)
+                {
+                    dxdy += new XY(GlobalRandom.Next(2) - 1, GlobalRandom.Next(2) - 1);
+                    dxdy = dxdy.Unit();
+                }
+
+                if (windy == 2) windy = 1;
+
+                if (dxdy.X != 0 && dxdy.Y != 0)
+                {
+                    if (GlobalRandom.Next(2) == 0)
+                    {
+                        dxdy = new XY(dxdy.X, 0);
+                    }
+                    else
+                    {
+                        dxdy = new XY(0, dxdy.Y);
+                    }
+                }
+
+                var n = thisPoint + dxdy;
+
+                if (n.X < 0 || n.Y < 0 || n.X >= Metamap.GetLength(0) || n.Y >= Metamap.GetLength(1))
+                {
+                    return;
+                }
+
+                int nextDirection = 0;
+                int thisDirection = 0;
+
+                if (dxdy.X == -1)
+                {
+                    nextDirection = 2;
+                    thisDirection = 1;
+                }
+                else if (dxdy.X == 1)
+                {
+                    nextDirection = 1;
+                    thisDirection = 2;
+                }
+                else if (dxdy.Y == -1)
+                {
+                    nextDirection = 3;
+                    thisDirection = 0;
+                }
+                else if (dxdy.Y == 1)
+                {
+                    nextDirection = 0;
+                    thisDirection = 3;
+                }
+
+                Metamap[thisPoint.X, thisPoint.Y].Add((MetamapTile)(thisDirection + (4 * (2 - majorness))));
+                Metamap[n.X, n.Y].Add((MetamapTile)(nextDirection + (4 * (2 - majorness))));
+                Road(n, dxdy, windy, majorness, keepGoingChance);
+                
+                double newRoadChance = (double)majorness / 6.0;
+
+                if (GlobalRandom.NextDouble() < newRoadChance)
+                {
+                    XY nextDir;
+                    if (dxdy.X != 0)
+                    {
+                        if (GlobalRandom.Next(2) == 0)
+                        {
+                            nextDir = new XY(0, -1);
+                        }
+                        else
+                        {
+                            nextDir = new XY(0, 1);
+                        }
+                    }
+                    else
+                    {
+                        if (GlobalRandom.Next(2) == 0)
+                        {
+                            nextDir = new XY(-1, 0);
+                        }
+                        else
+                        {
+                            nextDir = new XY(1, 0);
+                        }
+                    }
+                    int nextWindy = GlobalRandom.Next(4) == 0 ? 2 : 0;
+                    int nextMajorness = GlobalRandom.Next(majorness + 1);
+
+                    Road(thisPoint, nextDir, nextWindy, nextMajorness, keepGoingChance, true);
+                }
+            }
+        }
+
     }
 }

@@ -72,6 +72,22 @@ namespace Game
         }
 
         /// <summary>
+        /// Return random (or seeded - by math.abs(int / maxint)) double
+        /// </summary>
+        /// <returns></returns>
+        public static double NextDouble()
+        {
+            if (SeededValues.Count == 0)
+            {
+                return R.NextDouble();
+            }
+            else
+            {
+                return Math.Abs(SeededValues.Pop()) / int.MaxValue;
+            }
+        }
+
+        /// <summary>
         /// Put a value on to the stack of values to return instead of actual random numbers
         /// Used for testing
         /// </summary>

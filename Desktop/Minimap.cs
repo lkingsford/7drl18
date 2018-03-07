@@ -42,8 +42,8 @@ namespace Desktop
                 for(var iy = 0; iy < G.Metamap.GetLength(1); ++iy)
                 {
                     int srcX = 0;
-                    int srcY = 0;
-                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.MajorRoadNorth))
+                    int srcY = 2;
+                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.PathNorth))
                     {
                         srcX = 0;
                         AppSpriteBatch.Draw(MinimapTileSprites,
@@ -51,7 +51,7 @@ namespace Desktop
                             new Rectangle(srcX * tileWidth, srcY * tileHeight, tileWidth, tileHeight),
                             Color.White);
                     }
-                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.MajorRoadSouth))
+                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.PathSouth))
                     {
                         srcX = 1;
                         AppSpriteBatch.Draw(MinimapTileSprites,
@@ -59,7 +59,7 @@ namespace Desktop
                             new Rectangle(srcX * tileWidth, srcY * tileHeight, tileWidth, tileHeight),
                             Color.White);
                     }
-                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.MajorRoadEast))
+                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.PathEast))
                     {
                         srcX = 2;
                         AppSpriteBatch.Draw(MinimapTileSprites,
@@ -67,7 +67,7 @@ namespace Desktop
                             new Rectangle(srcX * tileWidth, srcY * tileHeight, tileWidth, tileHeight),
                             Color.White);
                     }
-                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.MajorRoadWest))
+                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.PathWest))
                     {
                         srcX = 3;
                         AppSpriteBatch.Draw(MinimapTileSprites,
@@ -75,6 +75,7 @@ namespace Desktop
                             new Rectangle(srcX * tileWidth, srcY * tileHeight, tileWidth, tileHeight),
                             Color.White);
                     }
+
                     srcY = 1;
                     if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.MinorRoadNorth))
                     {
@@ -108,8 +109,8 @@ namespace Desktop
                             new Rectangle(srcX * tileWidth, srcY * tileHeight, tileWidth, tileHeight),
                             Color.White);
                     }
-                    srcY = 2;
-                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.PathNorth))
+                    srcY = 0;
+                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.MajorRoadNorth))
                     {
                         srcX = 0;
                         AppSpriteBatch.Draw(MinimapTileSprites,
@@ -117,7 +118,7 @@ namespace Desktop
                             new Rectangle(srcX * tileWidth, srcY * tileHeight, tileWidth, tileHeight),
                             Color.White);
                     }
-                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.PathSouth))
+                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.MajorRoadSouth))
                     {
                         srcX = 1;
                         AppSpriteBatch.Draw(MinimapTileSprites,
@@ -125,7 +126,7 @@ namespace Desktop
                             new Rectangle(srcX * tileWidth, srcY * tileHeight, tileWidth, tileHeight),
                             Color.White);
                     }
-                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.PathEast))
+                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.MajorRoadEast))
                     {
                         srcX = 2;
                         AppSpriteBatch.Draw(MinimapTileSprites,
@@ -133,7 +134,7 @@ namespace Desktop
                             new Rectangle(srcX * tileWidth, srcY * tileHeight, tileWidth, tileHeight),
                             Color.White);
                     }
-                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.PathWest))
+                    if (G.Metamap[ix, iy].Contains(Game.Game.MetamapTile.MajorRoadWest))
                     {
                         srcX = 3;
                         AppSpriteBatch.Draw(MinimapTileSprites,

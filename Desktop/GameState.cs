@@ -196,8 +196,6 @@ namespace Desktop
             }
         }
 
-        bool toggle = false;
-
         int drawLeft = 352;
         int drawTop = 72;
 
@@ -209,11 +207,6 @@ namespace Desktop
         /// <param name="GameTime">Snapshot of timing</param>
         public override void Draw(GameTime GameTime)
         {
-            if (toggle)
-            {
-                AppGraphicsDevice.Clear(Color.Red);
-            }
-
             AppSpriteBatch.Begin();
             // Draw things here
 

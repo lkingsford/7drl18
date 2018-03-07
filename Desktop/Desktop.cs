@@ -64,7 +64,10 @@ namespace Desktop
             State.StateStack = States;
 
             // Create a new game, and make the UI on top of the stack
-            States.Add(new GameState(new Game.Game(Content), this));
+            var game = new Game.Game(Content);
+            States.Add(new GameState(game, this));
+
+            States.Add(new Minimap(game, this));
 
             base.Initialize();
         }

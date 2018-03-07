@@ -70,6 +70,30 @@ namespace Game
                 actor.Location = new XY(tileX, tileY);
                 Actors.Add(actor);
             }
+
+            // Generate metamap
+            Metamap = new HashSet<MetamapTile>[32, 32];
+            for (var ix = 0; ix < Metamap.GetLength(0); ++ix)
+            {
+                for (var iy = 0; iy < Metamap.GetLength(1); ++iy)
+                {
+                    Metamap[ix, iy] = new HashSet<MetamapTile>();
+                }
+            }
+
+                    for (var ix = 0; ix <= 13; ++ix)
+            {
+                Metamap[ix, 12].Add(MetamapTile.MajorRoadEast);
+                Metamap[ix, 12].Add(MetamapTile.MajorRoadWest);
+            }
+
+            for (var iy = 0; iy <= 13; ++iy)
+            {
+                Metamap[12, iy].Add(MetamapTile.PathNorth);
+                Metamap[12, iy].Add(MetamapTile.PathSouth);
+                Metamap[2, iy].Add(MetamapTile.MinorRoadNorth);
+                Metamap[2, iy].Add(MetamapTile.MinorRoadSouth);
+            }
         }
 
         private ContentManager Content;
@@ -122,6 +146,14 @@ namespace Game
                 return result;
             }
         }
+
+        public enum MetamapTile { MajorRoadNorth, MajorRoadEast, MajorRoadWest, MajorRoadSouth, MinorRoadNorth, MinorRoadEast, MinorRoadWest, MinorRoadSouth, PathNorth, PathEast, PathWest, PathSouth };
+
+        /// <summary>
+        /// The 'meta' map - the one which each tile becomes a prefab
+        /// </summary>
+        /// <remarks>It's neatish... but I wonder is it fast?</remarks>
+        public HashSet<MetamapTile>[,] Metamap;
 
         /// <summary>
         /// Currently visible actors. Positions are still absolute./

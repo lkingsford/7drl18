@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Desktop.cs" />
     <Compile Include="GameState.cs" />
+    <Compile Include="Minimap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

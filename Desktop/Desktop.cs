@@ -67,7 +67,7 @@ namespace Desktop
             var game = new Game.Game(Content);
             States.Add(new GameState(game, this));
 
-            States.Add(new Minimap(game, this));
+            //States.Add(new Minimap(game, this));
 
             base.Initialize();
         }

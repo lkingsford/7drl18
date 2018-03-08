@@ -21,60 +21,71 @@ namespace Game
 
             var map = Content.Load<TiledMap>("Maps/Area1");
 
-            GlobalMap = new MapTile[map.Width, map.Height];
+            GlobalMap = new MapTile[MetaTileWidth * MetaGlobalWidth, MetaTileHeight * MetaGlobalHeight];
 
             for (int ix = 0; ix < MapWidth; ++ix)
             {
                 for (int iy = 0; iy < MapHeight; ++iy)
                 {
-                    var tileId = map.TileLayers[0].Tiles[ix + iy * MapWidth].GlobalIdentifier;
-                    string walkableValue = null;
+                    var tileId = 0;//map.TileLayers[0].Tiles[ix + iy * MapWidth].GlobalIdentifier;
+                    //string walkableValue = null;
 
-                    tiledTileset = map.GetTilesetByTileGlobalIdentifier(tileId);
-                    var tiledTile = tiledTileset.Tiles[tileId - tiledTileset.FirstGlobalIdentifier];
-                    tiledTile?.Properties.TryGetValue("walkable", out walkableValue);
-                    var walkable = walkableValue != null ? walkableValue == "true" : false;
+                    //tiledTileset = map.GetTilesetByTileGlobalIdentifier(tileId);
+                    tiledTileset = map.Tilesets[0];
+                    //var tiledTile = tiledTileset.Tiles[tileId - tiledTileset.FirstGlobalIdentifier];
+                    //tiledTile?.Properties.TryGetValue("walkable", out walkableValue);
+                    //var walkable = walkableValue != null ? walkableValue == "true" : false;
+                    var walkable = true;
 
-                    GlobalMap[ix, iy] = new MapTile(walkable, tiledTile.LocalTileIdentifier);
+                    GlobalMap[ix, iy] = new MapTile(walkable, 0);
                 }
             }
 
-            // Tiled stores objects with pixels - hence, needing to do the math here
-            foreach (var o in map.GetLayer<TiledMapObjectLayer>("spawn").Objects)
-            {
-                var tileX = (int)o.Position.X / map.TileWidth;
-                var tileY = (int)o.Position.Y / map.TileHeight;
+            //// Tiled stores objects with pixels - hence, needing to do the math here
+            //foreach (var o in map.GetLayer<TiledMapObjectLayer>("spawn").Objects)
+            //{
+            //    var tileX = (int)o.Position.X / map.TileWidth;
+            //    var tileY = (int)o.Position.Y / map.TileHeight;
 
-                Actor actor;
+            //    Actor actor;
 
-                switch (o.Name)
-                {
-                    case "pc":
-                        actor = new Player(GlobalMap, this);
-                        Player = (Player)actor;
-                        break;
-                    case "bad":
-                        actor = new Enemy(GlobalMap, this);
-                        actor.Sprite = 1;
-                        break;
-                    case "knife":
-                        actor = new Enemy(GlobalMap, this);
-                        actor.Sprite = 2;
-                        break;
-                    default:
-                        // Bad.
-                        // TODO: Log
-                        continue;
-                }
+            //    switch (o.Name)
+            //    {
+            //        case "pc":
+            //            actor = new Player(GlobalMap, this);
+            //            Player = (Player)actor;
+            //            break;
+            //        case "bad":
+            //            actor = new Enemy(GlobalMap, this);
+            //            actor.Sprite = 1;
+            //            break;
+            //        case "knife":
+            //            actor = new Enemy(GlobalMap, this);
+            //            actor.Sprite = 2;
+            //            break;
+            //        default:
+            //            // Bad.
+            //            // TODO: Log
+            //            continue;
+            //    }
 
-                actor.Location = new XY(tileX, tileY);
-                Actors.Add(actor);
-            }
+            //    actor.Location = new XY(tileX, tileY);
+            //    Actors.Add(actor);
+            //}
+
+            Player =new Player(GlobalMap, this);
+            Actors.Add(Player);
 
             // Generate metamap
 
             GenerateMetamap();
+            GenerateMap();
         }
+
+        private int MetaTileWidth = 15;
+        private int MetaTileHeight = 15;
+        private int MetaGlobalWidth = 32;
+        private int MetaGlobalHeight = 32;
 
         private ContentManager Content;
 
@@ -248,7 +259,7 @@ namespace Game
         /// </summary>
         private void GenerateMetamap()
         {
-            Metamap = new HashSet<MetamapTile>[32, 32];
+            Metamap = new HashSet<MetamapTile>[MetaGlobalWidth, MetaGlobalHeight];
             for (var ix = 0; ix < Metamap.GetLength(0); ++ix)
             {
                 for (var iy = 0; iy < Metamap.GetLength(1); ++iy)
@@ -422,5 +433,102 @@ namespace Game
             }
         }
 
+
+        /// <summary>
+        /// Make a tile for a tile
+        /// </summary>
+        /// <param name="tile"></param>
+        private void MakeTile(XY xy, HashSet<MetamapTile> tile)
+        {
+            var thisTileOrigin = new XY(xy.X * MetaTileWidth, xy.Y * MetaTileHeight);
+
+            foreach(var toMake in tile)
+            {
+                var roadType = (int)toMake / 4;
+                var roadDirection = (int)toMake % 4;
+                switch (roadDirection)
+                {
+                    case 0:
+                        {
+                            // North
+                            int x = thisTileOrigin.X + MetaTileWidth / 2;
+                            for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y >= thisTileOrigin.Y; --y)
+                            {
+                                Brush(new XY(x, y), roadType, false);
+                            }
+                            break;
+                        }
+                    case 1:
+                        // East
+                        {
+                            int y = thisTileOrigin.Y + MetaTileHeight / 2;
+                            for (int x = thisTileOrigin.X + MetaTileWidth / 2; x < thisTileOrigin.X + MetaTileWidth; ++x)
+                            {
+                                Brush(new XY(x, y), roadType, false);
+                            }
+                            break;
+                        }
+                    case 2:
+                        // West
+                        {
+                            int y = thisTileOrigin.Y + MetaTileHeight / 2;
+                            for (int x = thisTileOrigin.X + MetaTileWidth / 2; x >= thisTileOrigin.X; --x)
+                            {
+                                Brush(new XY(x, y), roadType, false);
+                            }
+                            break;
+                        }
+                    case 3:
+                            // South
+                        {
+                            int x = thisTileOrigin.X + MetaTileWidth / 2;
+                            for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y < thisTileOrigin.Y + MetaTileHeight; ++y)
+                            {
+                                Brush(new XY(x, y), roadType, false);
+                            }
+                            break;
+                        }
+                }
+            }
+        }
+
+        private void Brush(XY xy, int tile, bool horiz)
+        {
+            int tileToDo = 0;
+            switch (tile)
+            {
+                case 0:
+                    {
+                        var toSet = new List() { new XY(xy.X, xy.Y) };
+                    }
+                    break;
+                case 1:
+                    tileToDo = 2;
+                    break;
+                case 2:
+                    tileToDo = 3;
+                    break;
+            }
+            Player.Location = xy;
+        }
+
+        private void Safeset(XY xy, int tile)
+        {
+            if (xy.ContainedBy(0,0,MapWidth-1, MapHeight-1))
+            {
+                GlobalMap[xy.X, xy.Y] = new MapTile(true, tile;
+            }
+        }
+
+        private void GenerateMap()
+        {
+            for (var ix = 0; ix < Metamap.GetLength(0); ++ix)
+            {
+                for (var iy = 0; iy < Metamap.GetLength(1); ++iy)
+                {
+                    MakeTile(new XY(ix, iy), Metamap[ix, iy]);
+                }
+            }
+        }
     }
 }

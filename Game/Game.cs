@@ -462,7 +462,7 @@ namespace Game
                         // East
                         {
                             int y = thisTileOrigin.Y + MetaTileHeight / 2;
-                            for (int x = thisTileOrigin.X + MetaTileWidth / 2; x < thisTileOrigin.X + MetaTileWidth; ++x)
+                            for (int x = thisTileOrigin.X + MetaTileWidth / 2; x <= thisTileOrigin.X + MetaTileWidth; ++x)
                             {
                                 Brush(new XY(x, y), roadType, false);
                             }
@@ -482,7 +482,7 @@ namespace Game
                             // South
                         {
                             int x = thisTileOrigin.X + MetaTileWidth / 2;
-                            for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y < thisTileOrigin.Y + MetaTileHeight; ++y)
+                            for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y <= thisTileOrigin.Y + MetaTileHeight; ++y)
                             {
                                 Brush(new XY(x, y), roadType, false);
                             }
@@ -490,34 +490,51 @@ namespace Game
                         }
                 }
             }
+
+            GlobalMap[thisTileOrigin.X, thisTileOrigin.Y] = new MapTile(false, 6);
         }
 
         private void Brush(XY xy, int tile, bool horiz)
         {
-            int tileToDo = 0;
             switch (tile)
             {
                 case 0:
-                    {
-                        var toSet = new List() { new XY(xy.X, xy.Y) };
-                    }
+                    BrushSet(1, xyRect(xy - new XY(4, 4), xy + new XY(4, 4)));
+                    BrushSet(2, xyRect(xy - new XY(2, 2), xy + new XY(2, 2)));
                     break;
                 case 1:
-                    tileToDo = 2;
+                    BrushSet(1, xyRect(xy - new XY(2, 2), xy + new XY(2, 2)));
+                    BrushSet(2, xyRect(xy - new XY(1, 1), xy + new XY(1, 1)));
                     break;
                 case 2:
-                    tileToDo = 3;
+                    BrushSet(1, xyRect(xy - new XY(1, 1), xy + new XY(1, 1)));
                     break;
             }
+
             Player.Location = xy;
         }
 
-        private void Safeset(XY xy, int tile)
+        private void BrushSet(int tile, List<XY> todraw)
         {
-            if (xy.ContainedBy(0,0,MapWidth-1, MapHeight-1))
+            foreach(var xy in todraw)
+                if (xy.ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
+                {
+                    if (tile > GlobalMap[xy.X, xy.Y].DrawTile)
+                        GlobalMap[xy.X, xy.Y] = new MapTile(true, tile);
+                }
+        }
+
+        private List<XY> xyRect(XY topLeft, XY bottomRight)
+        {
+            var result = new List<XY>();
+            for (int ix = topLeft.X; ix <= bottomRight.X; ++ix)
             {
-                GlobalMap[xy.X, xy.Y] = new MapTile(true, tile;
+                for (int iy = topLeft.Y; iy <= bottomRight.Y; ++iy)
+                {
+                    result.Add(new XY(ix, iy));
+                }
             }
+            return result;
         }
 
         private void GenerateMap()

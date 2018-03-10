@@ -28,18 +28,24 @@ namespace Desktop
         public override void Draw(GameTime GameTime)
         {
             AppSpriteBatch.Begin();
+            DrawMinimap(new XY(100, 100));
+            AppSpriteBatch.End();
+        }
+
+        public void DrawMinimap(XY offset)
+        {
             var tileWidth = 13;
             var tileHeight = 13;
 
             var fullMapWidth = G.Metamap.GetLength(0) * tileWidth * 4;
             var fullMapHeight = G.Metamap.GetLength(1) * tileHeight * 4;
 
-            var drawLeft = 100;
-            var drawTop = 100;
+            var drawLeft = offset.X;
+            var drawTop = offset.Y;
 
-            for(var ix = 0; ix < G.Metamap.GetLength(0); ++ix)
+            for (var ix = 0; ix < G.Metamap.GetLength(0); ++ix)
             {
-                for(var iy = 0; iy < G.Metamap.GetLength(1); ++iy)
+                for (var iy = 0; iy < G.Metamap.GetLength(1); ++iy)
                 {
                     int srcX = 0;
                     int srcY = 2;
@@ -145,7 +151,18 @@ namespace Desktop
                 }
             }
 
-            AppSpriteBatch.End();
+            if (G.Player != null)
+            {
+                int srcY = 3;
+                int srcX = 0;
+                AppSpriteBatch.Draw(MinimapTileSprites,
+                    new Rectangle(drawLeft + (G.Player.Location.X / G.MetaTileWidth) * tileWidth,
+                                  drawTop + (G.Player.Location.Y / G.MetaTileHeight) * tileHeight, 
+                                  tileWidth, tileHeight),
+                    new Rectangle(srcX * tileWidth, srcY * tileHeight, tileWidth, tileHeight),
+                    Color.White);
+            }
+
         }
     }
 }

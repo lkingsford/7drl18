@@ -82,10 +82,10 @@ namespace Game
             GenerateMap();
         }
 
-        private int MetaTileWidth = 15;
-        private int MetaTileHeight = 15;
-        private int MetaGlobalWidth = 32;
-        private int MetaGlobalHeight = 32;
+        public int MetaTileWidth { get; private set; } = 10;
+        public int MetaTileHeight { get; private set; } = 10;
+        private int MetaGlobalWidth = 18;
+        private int MetaGlobalHeight = 18;
 
         private ContentManager Content;
 
@@ -251,6 +251,8 @@ namespace Game
         }
 
         public TiledMapTileset tiledTileset { get; private set; }
+        public int MetaTileWidth1 { get => MetaTileWidth; set => MetaTileWidth = value; }
+        public int MetaTileWidth2 { get => MetaTileWidth; set => MetaTileWidth = value; }
 
         public Player Player;
 
@@ -343,10 +345,13 @@ namespace Game
         {
             if (forceGo || keepGoingChance > GlobalRandom.NextDouble())
             {
-                if (windy != 1)
+                if (windy == 1)
                 {
-                    dxdy += new XY(GlobalRandom.Next(2) - 1, GlobalRandom.Next(2) - 1);
-                    dxdy = dxdy.Unit();
+                    do
+                    {
+                        dxdy += new XY(GlobalRandom.Next(2) - 1, GlobalRandom.Next(2) - 1);
+                        dxdy = dxdy.Unit();
+                    } while (dxdy == new XY(0, 0));
                 }
 
                 if (windy == 2) windy = 1;
@@ -392,6 +397,11 @@ namespace Game
                 {
                     nextDirection = 0;
                     thisDirection = 3;
+                }
+                else
+                {
+                    // Oops
+                    throw new Exception();
                 }
 
                 Metamap[thisPoint.X, thisPoint.Y].Add((MetamapTile)(thisDirection + (4 * (2 - majorness))));
@@ -452,9 +462,14 @@ namespace Game
                         {
                             // North
                             int x = thisTileOrigin.X + MetaTileWidth / 2;
-                            for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y >= thisTileOrigin.Y; --y)
+                            for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y <= thisTileOrigin.Y; --y)
                             {
                                 Brush(new XY(x, y), roadType, false);
+                                if (roadType == 0)
+                                {
+                                    if (new XY(x, y).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
+                                        GlobalMap[x, y] = new MapTile(true, 4);
+                                }
                             }
                             break;
                         }
@@ -465,6 +480,11 @@ namespace Game
                             for (int x = thisTileOrigin.X + MetaTileWidth / 2; x <= thisTileOrigin.X + MetaTileWidth; ++x)
                             {
                                 Brush(new XY(x, y), roadType, false);
+                                if (roadType == 0)
+                                {
+                                    if (new XY(x, y).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
+                                        GlobalMap[x, y] = new MapTile(true, 5);
+                                }
                             }
                             break;
                         }
@@ -472,9 +492,14 @@ namespace Game
                         // West
                         {
                             int y = thisTileOrigin.Y + MetaTileHeight / 2;
-                            for (int x = thisTileOrigin.X + MetaTileWidth / 2; x >= thisTileOrigin.X; --x)
+                            for (int x = thisTileOrigin.X + MetaTileWidth / 2; x <= thisTileOrigin.X; --x)
                             {
                                 Brush(new XY(x, y), roadType, false);
+                                if (roadType == 0)
+                                {
+                                    if (new XY(x, y).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
+                                        GlobalMap[x, y] = new MapTile(true, 5);
+                                }
                             }
                             break;
                         }
@@ -485,6 +510,11 @@ namespace Game
                             for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y <= thisTileOrigin.Y + MetaTileHeight; ++y)
                             {
                                 Brush(new XY(x, y), roadType, false);
+                                if (roadType == 0)
+                                {
+                                    if (new XY(x, y).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
+                                        GlobalMap[x, y] = new MapTile(true, 4);
+                                }
                             }
                             break;
                         }

@@ -21,6 +21,8 @@ namespace Desktop
         /// </summary>
         protected Game.Game G;
 
+        protected Minimap minimap;
+
         /// <summary>
         /// Create a game interface from a given game
         /// </summary>
@@ -56,6 +58,8 @@ namespace Desktop
 
             arrowWidth = MovementArrowsSprite.Width / 9;
             arrowHeight = MovementArrowsSprite.Height / 3;
+
+            minimap = new Minimap(Game, MonogameGame);
         }
 
         Texture2D MapTileSprites;
@@ -397,6 +401,8 @@ namespace Desktop
                 }
             }
             AppSpriteBatch.DrawString(StateFont, phaseMessage, new Vector2(20, 60), Color.White);
+
+            minimap.DrawMinimap(new XY(1000, 120));
 
             AppSpriteBatch.End();
 

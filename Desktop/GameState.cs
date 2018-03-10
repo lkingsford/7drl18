@@ -94,19 +94,30 @@ namespace Desktop
         /// </summary>
         private KeyboardState LastState;
 
+        private TimeSpan lastActionTime;
+
         /// <summary>
         /// Run logic for this state - including input
         /// </summary>
         /// <param name="GameTime">Snapshot of timing</param>
         public override void Update(GameTime GameTime)
         {
+            if (lastActionTime == null)
+            {
+                lastActionTime = GameTime.TotalGameTime;
+            }
+
             // Get the current state, get the last state, and any new buttons are acted upon
             var currentState = Keyboard.GetState();
             foreach (var i in currentState.GetPressedKeys())
             {
-                if (LastState.IsKeyUp(i))
+                if (LastState.IsKeyUp(i) 
+                    || 
+                   (G.CurrentPhase == Game.Game.TurnPhases.Player && G.NoVisible() &&
+                    (GameTime.TotalGameTime - lastActionTime).TotalMilliseconds > 100))
                 {
                     KeyPressed(i);
+                    lastActionTime = GameTime.TotalGameTime;
                 }
             }
             LastState = currentState;

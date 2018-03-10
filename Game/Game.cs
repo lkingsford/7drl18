@@ -235,6 +235,11 @@ namespace Game
             }
         }
 
+        public bool NoVisible()
+        {
+            return !VisibleActors.Any(i => (i is Enemy));
+        }
+
         /// <summary>
         /// Do the next turn
         /// </summary>
@@ -257,7 +262,7 @@ namespace Game
 
                     // If no enemies in sight, do their phase and go
                     // straight back to the player one
-                    if (!VisibleActors.Any(i => (i is Enemy)))
+                    if (NoVisible())
                     {
                         NextTurn();
                     }

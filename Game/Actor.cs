@@ -15,6 +15,7 @@ namespace Game
 
         protected MapTile[,] gameMap;
         protected Game game;
+        protected int dmg = 1;
 
         public Actor(MapTile[,] globalMap, Game game)
         {
@@ -50,7 +51,7 @@ namespace Game
             }
         }
 
-        protected virtual void Hit(Actor actor, int dmg = 1)
+        protected virtual void Hit(Actor actor)
         {
             actor.GotHit(dmg);
         }

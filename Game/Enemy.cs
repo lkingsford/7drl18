@@ -12,6 +12,8 @@ namespace Game
             HP = 6;
         }
 
+        protected int pushDistance = 1;
+
         public void WhatYouWannaDo()
         {
             var player = game.Actors.FirstOrDefault(i => i is Player);
@@ -36,22 +38,26 @@ namespace Game
             }
         }
 
-        protected override void Hit(Actor actor, int dmg = 1)
+        protected override void Hit(Actor actor)
         {
             toAttack = false;
+            var thisdmg = dmg;
             if (actor.Location.Adjacent(Location))
             {
-                // Enemy pushes away when hitting
-                var attackDirection = (this.Location - actor.Location).Unit();
-                var actorStartingLocation = actor.Location;
-                actor.Move(-1 * attackDirection);
-                if (actorStartingLocation != actor.Location)
+                for (var i = 0; i < pushDistance; ++i)
                 {
-                    // More damage, if hit into something
-                    dmg += 1;
+                    // Enemy pushes away when hitting
+                    var attackDirection = (this.Location - actor.Location).Unit();
+                    var actorStartingLocation = actor.Location;
+                    actor.Move(-1 * attackDirection);
+                    if (actorStartingLocation == actor.Location)
+                    {
+                        // More damage, if hit into something
+                        thisdmg += 1;
+                    }
                 }
-                base.Hit(actor, dmg);
-            }
+                actor.GotHit(dmg);
+            };
         }
 
         public override void GotHit(int damage)

@@ -31,22 +31,6 @@ namespace Desktop
         {
             this.G = Game;
 
-            //inputListener = new InputListenerComponent(MonogameGame);
-            //inputManager = new MonoGame.Extended.NuclexGui.GuiInputService(inputListener);
-
-            //gui = new GuiManager(MonogameGame.Services, inputManager);
-            //gui.Screen = new GuiScreen();
-            //gui.Initialize();
-            //var button = new GuiButtonControl
-            //{
-            //    Name = "button",
-            //    Bounds = new UniRectangle(new UniVector(new UniScalar(10), new UniScalar(10)), new UniVector(new UniScalar(200), new UniScalar(100))),
-            //    Text = "Dang!"
-            //};
-
-            //button.Pressed += OnButtonPressed;
-            //gui.Screen.Desktop.Children.Add(button);
-
             MapTileSprites = AppContentManager.Load<Texture2D>("MapTiles");
             PCSprites = AppContentManager.Load<Texture2D>("CharacterSprites");
             MomentumSprite = AppContentManager.Load<Texture2D>("UiElements/MomentumMarker");
@@ -75,21 +59,6 @@ namespace Desktop
         private int arrowWidth;
         private int arrowHeight;
 
-        //GuiScreen oldScreen;
-
-        //private void OnButtonPressed(object sender, EventArgs e)
-        //{
-        //    toggle = !toggle;
-        //    if (toggle)
-        //    {
-        //        gui.Screen = new GuiScreen();
-        //    }
-        //}
-
-        //private readonly GuiManager gui;
-        //private GuiInputService inputManager;
-        //private InputListenerComponent inputListener;
-
         /// <summary>
         /// State as of the previous Update
         /// </summary>
@@ -103,10 +72,15 @@ namespace Desktop
         /// <param name="GameTime">Snapshot of timing</param>
         public override void Update(GameTime GameTime)
         {
-            if (G.Player.HP == 0)
+            if (G.Player.HP <= 0)
             {
                 // Player Dead
                 Dead();
+            }
+
+            if (G.DeadZulu)
+            {
+                Win();
             }
 
             if (lastActionTime == null)
@@ -128,20 +102,12 @@ namespace Desktop
                 }
             }
             LastState = currentState;
+        }
 
-            // Do turn, if player next move is set
-            //if (G.Player.NextMove != Player.Instruction.NOT_SET)
-            //{
-            //    G.DoTurn();
-            //}
-
-            //if (G.GameOver)
-            //{
-            //    StateStack.Add(new AtlasWarriors.LoseState(G));
-            //}
-
-            //inputListener.Update(GameTime);
-            //gui.Update(GameTime);
+        private void Win()
+        {
+            StateStack.Remove(this);
+            StateStack.Add(new DeadState(G));
         }
 
         private void Dead()

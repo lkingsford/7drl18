@@ -14,11 +14,13 @@ namespace Desktop
 
         private GuiButtonControl btnTitle;
 
+        private string DeathText = "";
+        private SpriteFont DeathFont;
+
         public DeadState(Game.Game g)
         {
             this.g = g;
 
-            background = AppContentManager.Load<Texture2D>("Title/Gameover");
             gui.Screen = new GuiScreen();
             gui.Initialize();
 
@@ -30,6 +32,30 @@ namespace Desktop
             };
             btnTitle.Pressed += BtnTitle_Pressed;
             gui.Screen.Desktop.Children.Add(btnTitle);
+
+            if (g.DeadZulu)
+            {
+                background = AppContentManager.Load<Texture2D>("Title/Victory");
+                DeathText = $@"Zulu has fallen, and the denizens of New London are at peace once more.
+
+You slayed {g.DeadLackeys} of Zulu's lackeys.
+You slayed {g.DeadKnifes} of Zulu's cutters.
+You slayed {g.DeadBrutes} of Zulu's brutes.
+Zulu has been slain.";
+            }
+            else
+            {
+                background = AppContentManager.Load<Texture2D>("Title/Gameover");
+                DeathText = $@"Your vegeance was not satisfied.
+The city of New London remains under the criminal guard of Zulu.
+
+You slayed {g.DeadLackeys} of Zulu's lackeys.
+You slayed {g.DeadKnifes} of Zulu's cutters.
+You slayed {g.DeadBrutes} of Zulu's brutes.
+Zulu remains alive.";
+            }
+
+            DeathFont = AppContentManager.Load<SpriteFont>("GameOverFont");
         }
 
         private void BtnTitle_Pressed(object sender, System.EventArgs e)
@@ -46,6 +72,7 @@ namespace Desktop
         {
             AppSpriteBatch.Begin();
             AppSpriteBatch.Draw(background, new Rectangle(0, 0, 1280, 720), Color.White);
+            AppSpriteBatch.DrawString(DeathFont, DeathText, new Vector2(100, 200), Color.LightGray);
             // Draw things here
             AppSpriteBatch.End();
 

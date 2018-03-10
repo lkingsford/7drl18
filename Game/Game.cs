@@ -255,8 +255,25 @@ namespace Game
             }
 
             // Remove dead actors
+            Hearse();
+        }
+
+        public int DeadKnifes { private set; get; } = 0;
+        public int DeadBrutes { private set; get; } = 0;
+        public int DeadLackeys { private set; get; } = 0;
+        public bool DeadZulu { private set; get; } = true;
+
+        private void Hearse()
+        {
+            foreach (var i in Actors.Where(i=>i.HP <= 0))
+            {
+                if (i is Knife) DeadKnifes++;
+                if (i is Brute) DeadBrutes++;
+                if (i is Lackey) DeadLackeys++;
+            }
             Actors.RemoveAll(i => i.HP <= 0);
         }
+
 
         public XY ActiveTopLeft
         {
@@ -747,7 +764,7 @@ namespace Game
                             break;
                         case 0:
                         default:
-                            actor = new Enemy(GlobalMap, this);
+                            actor = new Lackey(GlobalMap, this);
                             actor.Sprite = 2;
                             break;
                     }

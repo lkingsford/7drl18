@@ -33,5 +33,10 @@ harshly.
 - May spend 1 momentum to move away from attack direction
 - May spend X momentum to parry (X = amount of attacks)
 
+- Brutes don't get stunned
+- Brutes push back further
+- Knifes don't push back
+- Knifes can't parry
+
 ## Other rules
 - If no enemies in sight, move freely

@@ -285,3 +285,10 @@
 /processorParam:TextureFormat=Color
 /build:Title/Gameover.png
 
+#begin GameOverFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:GameOverFont.spritefont
+

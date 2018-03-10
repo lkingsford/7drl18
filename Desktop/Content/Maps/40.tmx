@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="2" height="6" tilewidth="64" tileheight="64" infinite="0" nextobjectid="1">
+ <tileset firstgid="1" source="WorldTiles.tsx"/>
+ <tileset firstgid="73" source="Park.tsx"/>
+ <layer name="Tile Layer 1" width="2" height="6">
+  <data encoding="csv">
+74,2,
+76,2,
+74,2,
+75,2,
+83,2,
+81,2
+</data>
+ </layer>
+</map>

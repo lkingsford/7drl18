@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using MonoGame.Extended.Tiled;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,31 @@ namespace Game
         {
             Content = content;
 
-            var map = Content.Load<TiledMap>("Maps/Area1");
+            var newMap = Content.Load<TiledMap>($"Maps/Prefabs");
+
+            // Load tilesets
+            foreach(var tileset in newMap.Tilesets)
+            {
+                Tilesets.Add(tileset);
+            }
+
+            foreach(var i in Tilesets)
+            {
+                int? anyLid = i.Tiles.FirstOrDefault(j => j.Properties.ContainsKey("name") && j.Properties["name"] == "BaseAny")?.LocalTileIdentifier;
+                if (anyLid != null)
+                    BaseAnyTile = i.FirstGlobalIdentifier + anyLid.Value;
+                int? roadLid = i.Tiles.FirstOrDefault(j => j.Properties.ContainsKey("name") && j.Properties["name"] == "BaseRoad")?.LocalTileIdentifier;
+                if (roadLid != null)
+                    BaseRoadTile = i.FirstGlobalIdentifier + roadLid.Value;
+                int? sidewalkLid = i.Tiles.FirstOrDefault(j => j.Properties.ContainsKey("name") && j.Properties["name"] == "BaseSidewalk")?.LocalTileIdentifier;
+                if (sidewalkLid != null)
+                    BaseSidewalkTile = i.FirstGlobalIdentifier + sidewalkLid.Value;
+                int? wallLid = i.Tiles.FirstOrDefault(j => j.Properties.ContainsKey("name") && j.Properties["name"] == "BaseWall")?.LocalTileIdentifier;
+                if (wallLid != null)
+                    BaseWallTile = i.FirstGlobalIdentifier + wallLid.Value;
+            }
+
+            PrefabMap = newMap;
 
             GlobalMap = new MapTile[MetaTileWidth * MetaGlobalWidth, MetaTileHeight * MetaGlobalHeight];
 
@@ -27,17 +52,18 @@ namespace Game
             {
                 for (int iy = 0; iy < MapHeight; ++iy)
                 {
-                    var tileId = 0;//map.TileLayers[0].Tiles[ix + iy * MapWidth].GlobalIdentifier;
+                    var tileId = 0;
+                    //map.TileLayers[0].Tiles[ix + iy * MapWidth].GlobalIdentifier;
                     //string walkableValue = null;
 
                     //tiledTileset = map.GetTilesetByTileGlobalIdentifier(tileId);
-                    tiledTileset = map.Tilesets[0];
+                    //tiledTileset = map.Tilesets[0];
                     //var tiledTile = tiledTileset.Tiles[tileId - tiledTileset.FirstGlobalIdentifier];
                     //tiledTile?.Properties.TryGetValue("walkable", out walkableValue);
                     //var walkable = walkableValue != null ? walkableValue == "true" : false;
                     var walkable = true;
 
-                    GlobalMap[ix, iy] = new MapTile(walkable, 0);
+                    GlobalMap[ix, iy] = new MapTile(Tilesets, BaseAnyTile);
                 }
             }
 
@@ -81,6 +107,15 @@ namespace Game
             GenerateMetamap();
             GenerateMap();
         }
+
+        private TiledMap PrefabMap;
+        private List<Rectangle> Prefabs = new List<Rectangle>();
+        public List<TiledMapTileset> Tilesets = new List<TiledMapTileset>();
+
+        private int BaseAnyTile;
+        private int BaseRoadTile;
+        private int BaseSidewalkTile;
+        private int BaseWallTile;
 
         public int MetaTileWidth { get; private set; } = 10;
         public int MetaTileHeight { get; private set; } = 10;
@@ -129,7 +164,7 @@ namespace Game
                         }
                         else
                         {
-                            result[ix, iy] = new MapTile(false, 0);
+                            result[ix, iy] = new MapTile(Tilesets, BaseAnyTile);
                         }
                     }
                 }
@@ -464,12 +499,7 @@ namespace Game
                             int x = thisTileOrigin.X + MetaTileWidth / 2;
                             for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y <= thisTileOrigin.Y; --y)
                             {
-                                Brush(new XY(x, y), roadType, false);
-                                if (roadType == 0)
-                                {
-                                    if (new XY(x, y).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
-                                        GlobalMap[x, y] = new MapTile(true, 4);
-                                }
+                                Brush(new XY(x, y), roadType);
                             }
                             break;
                         }
@@ -479,12 +509,7 @@ namespace Game
                             int y = thisTileOrigin.Y + MetaTileHeight / 2;
                             for (int x = thisTileOrigin.X + MetaTileWidth / 2; x <= thisTileOrigin.X + MetaTileWidth; ++x)
                             {
-                                Brush(new XY(x, y), roadType, false);
-                                if (roadType == 0)
-                                {
-                                    if (new XY(x, y).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
-                                        GlobalMap[x, y] = new MapTile(true, 5);
-                                }
+                                Brush(new XY(x, y), roadType);
                             }
                             break;
                         }
@@ -494,12 +519,7 @@ namespace Game
                             int y = thisTileOrigin.Y + MetaTileHeight / 2;
                             for (int x = thisTileOrigin.X + MetaTileWidth / 2; x <= thisTileOrigin.X; --x)
                             {
-                                Brush(new XY(x, y), roadType, false);
-                                if (roadType == 0)
-                                {
-                                    if (new XY(x, y).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
-                                        GlobalMap[x, y] = new MapTile(true, 5);
-                                }
+                                Brush(new XY(x, y), roadType);
                             }
                             break;
                         }
@@ -509,48 +529,41 @@ namespace Game
                             int x = thisTileOrigin.X + MetaTileWidth / 2;
                             for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y <= thisTileOrigin.Y + MetaTileHeight; ++y)
                             {
-                                Brush(new XY(x, y), roadType, false);
-                                if (roadType == 0)
-                                {
-                                    if (new XY(x, y).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
-                                        GlobalMap[x, y] = new MapTile(true, 4);
-                                }
+                                Brush(new XY(x, y), roadType);
                             }
                             break;
                         }
                 }
             }
-
-            GlobalMap[thisTileOrigin.X, thisTileOrigin.Y] = new MapTile(false, 6);
         }
 
-        private void Brush(XY xy, int tile, bool horiz)
+        private void Brush(XY xy, int roadtype)
         {
-            switch (tile)
+            switch (roadtype)
             {
                 case 0:
-                    BrushSet(1, xyRect(xy - new XY(4, 4), xy + new XY(4, 4)));
-                    BrushSet(2, xyRect(xy - new XY(2, 2), xy + new XY(2, 2)));
+                    BrushSet(new MapTile(Tilesets, BaseSidewalkTile), xyRect(xy - new XY(4, 4), xy + new XY(4, 4)));
+                    BrushSet(new MapTile(Tilesets, BaseRoadTile), xyRect(xy - new XY(2, 2), xy + new XY(2, 2)));
                     break;
                 case 1:
-                    BrushSet(1, xyRect(xy - new XY(2, 2), xy + new XY(2, 2)));
-                    BrushSet(2, xyRect(xy - new XY(1, 1), xy + new XY(1, 1)));
+                    BrushSet(new MapTile(Tilesets, BaseSidewalkTile), xyRect(xy - new XY(2, 2), xy + new XY(2, 2)));
+                    BrushSet(new MapTile(Tilesets, BaseRoadTile), xyRect(xy - new XY(1, 1), xy + new XY(1, 1)));
                     break;
                 case 2:
-                    BrushSet(1, xyRect(xy - new XY(1, 1), xy + new XY(1, 1)));
+                    BrushSet(new MapTile(Tilesets, BaseSidewalkTile), xyRect(xy - new XY(1, 1), xy + new XY(1, 1)));
                     break;
             }
 
             Player.Location = xy;
         }
 
-        private void BrushSet(int tile, List<XY> todraw)
+        private void BrushSet(MapTile tile, List<XY> todraw)
         {
             foreach(var xy in todraw)
                 if (xy.ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
                 {
-                    if (tile > GlobalMap[xy.X, xy.Y].DrawTile)
-                        GlobalMap[xy.X, xy.Y] = new MapTile(true, tile);
+                    if (tile.BrushPriority >= GlobalMap[xy.X, xy.Y].BrushPriority)
+                        GlobalMap[xy.X, xy.Y] = tile;
                 }
         }
 
@@ -576,6 +589,12 @@ namespace Game
                     MakeTile(new XY(ix, iy), Metamap[ix, iy]);
                 }
             }
+            ApplyPrefabs();
+        }
+
+        private void ApplyPrefabs()
+        {
+
         }
     }
 }

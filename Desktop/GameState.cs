@@ -223,9 +223,9 @@ namespace Desktop
             {
                 for (var iy = 0; iy < G.CameraHeight; ++iy)
                 {
-                    var srcX = tileWidth * (mapToDraw[ix, iy].DrawTile % G.tiledTileset.Columns);
-                    var srcY = tileHeight * (mapToDraw[ix, iy].DrawTile / G.tiledTileset.Columns);
-                    AppSpriteBatch.Draw(MapTileSprites,
+                    var srcX = tileWidth * (mapToDraw[ix, iy].DrawTile % mapToDraw[ix, iy].Tileset.Columns);
+                    var srcY = tileHeight * (mapToDraw[ix, iy].DrawTile / mapToDraw[ix, iy].Tileset.Columns);
+                    AppSpriteBatch.Draw(mapToDraw[ix, iy].Tileset.Texture,
                         // Dest
                         new Rectangle(drawLeft + tileWidth * ix, drawTop + tileHeight * iy, tileWidth, tileHeight),
                         // Src

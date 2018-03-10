@@ -3,41 +3,49 @@
  <image source="../MapTiles.png" width="512" height="64"/>
  <tile id="0">
   <properties>
+   <property name="brushPriority" type="int" value="0"/>
    <property name="isAny" type="bool" value="true"/>
    <property name="isRoad" type="bool" value="false"/>
    <property name="isSidewalk" type="bool" value="false"/>
    <property name="isWall" type="bool" value="false"/>
    <property name="mustReplace" type="bool" value="true"/>
+   <property name="name" value="BaseAny"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="1">
   <properties>
+   <property name="brushPriority" type="int" value="1"/>
    <property name="isAny" type="bool" value="false"/>
    <property name="isRoad" type="bool" value="false"/>
    <property name="isSidewalk" type="bool" value="true"/>
    <property name="isWall" type="bool" value="false"/>
    <property name="mustReplace" type="bool" value="true"/>
+   <property name="name" value="BaseSidewalk"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="2">
   <properties>
+   <property name="brushPriority" type="int" value="2"/>
    <property name="isAny" type="bool" value="false"/>
    <property name="isRoad" type="bool" value="true"/>
    <property name="isSidewalk" type="bool" value="false"/>
    <property name="isWall" type="bool" value="false"/>
    <property name="mustReplace" type="bool" value="true"/>
+   <property name="name" value="BaseRoad"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="3">
   <properties>
+   <property name="brushPriority" type="int" value="3"/>
    <property name="isAny" type="bool" value="false"/>
    <property name="isRoad" type="bool" value="false"/>
    <property name="isSidewalk" type="bool" value="false"/>
    <property name="isWall" type="bool" value="true"/>
    <property name="mustReplace" type="bool" value="true"/>
+   <property name="name" value="BaseWall"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>

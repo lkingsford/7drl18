@@ -92,11 +92,6 @@
 /processorParam:TextureFormat=Color
 /build:MapTiles.png
 
-#begin Maps/Area1.tmx
-/importer:TiledMapImporter
-/processor:TiledMapProcessor
-/build:Maps/Area1.tmx
-
 #begin Maps/WorldTiles.tsx
 /copy:Maps/WorldTiles.tsx
 
@@ -173,4 +168,84 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:MinimapTiles.png
+
+#begin Road.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Road.png
+
+#begin Park.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Park.png
+
+#begin Buildings2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Buildings2.png
+
+#begin Buildings1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Buildings1.png
+
+#begin Maps/Buildings1.tsx
+/copy:Maps/Buildings1.tsx
+
+#begin Maps/Buildings2.tsx
+/copy:Maps/Buildings2.tsx
+
+#begin Maps/Park.tsx
+/copy:Maps/Park.tsx
+
+#begin Maps/Road.tsx
+/copy:Maps/Road.tsx
+
+#begin Maps/Buildings3.tsx
+/copy:Maps/Buildings3.tsx
+
+#begin Buildings3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Buildings3.png
+
+#begin Maps/Prefabs.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:Maps/Prefabs.tmx
 

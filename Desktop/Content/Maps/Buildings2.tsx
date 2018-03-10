@@ -257,4 +257,36 @@
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
+ <tile id="32">
+  <properties>
+   <property name="isRoad" type="bool" value="false"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="true"/>
+   <property name="walkable" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="33">
+  <properties>
+   <property name="isRoad" type="bool" value="false"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="true"/>
+   <property name="walkable" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="34">
+  <properties>
+   <property name="isRoad" type="bool" value="false"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="true"/>
+   <property name="walkable" type="bool" value="false"/>
+  </properties>
+ </tile>
+ <tile id="35">
+  <properties>
+   <property name="isRoad" type="bool" value="false"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="true"/>
+   <property name="walkable" type="bool" value="false"/>
+  </properties>
+ </tile>
 </tileset>

@@ -202,6 +202,8 @@ namespace Game
             get
             {
                 var result = new HashSet<Action>();
+                if (Stunned)
+                    return result;
                 for (int ix = -1; ix <= 1; ix++)
                 {
                     for (int iy = -1; iy <= 1; iy++)

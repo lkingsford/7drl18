@@ -68,18 +68,22 @@ namespace Game
 
             Player = new Player(GlobalMap, this);
             Actors.Add(Player);
-
             // Generate metamap
 
             ProgressReporter?.Invoke(10, "Building road network...");
             GenerateMetamap();
+            PlayerStart = new XY(3 + MetaTileWidth * Metamap.GetLength(0) / 2, 3 + MetaTileHeight * Metamap.GetLength(1) / 2);
             ProgressReporter?.Invoke(20, "Generating map...");
             GenerateMap();
             ProgressReporter?.Invoke(90, "Placing mobs...");
             GenerateMobs();
+            ProgressReporter?.Invoke(99, "Placing Zulu...");
+            GenerateZulu();
 
-            Player.Location = new XY(MetaTileWidth * Metamap.GetLength(0) / 2, MetaTileHeight * Metamap.GetLength(1) / 2);
+            Player.Location = PlayerStart;
         }
+
+        private XY PlayerStart;
 
         private ReportProgress ProgressReporter = null;
 
@@ -261,7 +265,7 @@ namespace Game
         public int DeadKnifes { private set; get; } = 0;
         public int DeadBrutes { private set; get; } = 0;
         public int DeadLackeys { private set; get; } = 0;
-        public bool DeadZulu { private set; get; } = true;
+        public bool DeadZulu { private set; get; } = false;
 
         private void Hearse()
         {
@@ -270,6 +274,7 @@ namespace Game
                 if (i is Knife) DeadKnifes++;
                 if (i is Brute) DeadBrutes++;
                 if (i is Lackey) DeadLackeys++;
+                if (i is Zulu) DeadZulu = true;
             }
             Actors.RemoveAll(i => i.HP <= 0);
         }
@@ -738,7 +743,8 @@ namespace Game
                 {
                     for (var iy = tl.Y; iy < br.Y; iy++)
                     {
-                        if (new XY(ix, iy).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1) && GlobalMap[ix, iy].Walkable)
+                        if (new XY(ix, iy).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1) && GlobalMap[ix, iy].Walkable
+                            && !Actors.Any(i => i.Location == new XY(ix, iy)))
                         {
                             spaces.Add(new XY(ix, iy));
                         }
@@ -781,6 +787,89 @@ namespace Game
 
                 mobsPlaced++;
             } while (mobsPlaced < amountOfMobs);
+        }
+
+        void GenerateZulu()
+        {
+            // Find a suitable place - end of a main road
+            var mainRoadTiles = new List<XY>();
+
+            for (var ix = 0; ix < Metamap.GetLength(0); ++ix)
+            {
+                for (var iy = 0; iy < Metamap.GetLength(1); ++iy)
+                {
+                    if ((Metamap[ix, iy].Contains(MetamapTile.MajorRoadEast) && Metamap[ix,iy].Contains(MetamapTile.MajorRoadWest)) ||
+                        (Metamap[ix, iy].Contains(MetamapTile.MajorRoadNorth) && Metamap[ix,iy].Contains(MetamapTile.MajorRoadSouth)))
+                    {
+                        mainRoadTiles.Add(new XY(ix * MetaTileWidth + MetaTileWidth / 2, iy * MetaTileHeight + MetaTileHeight / 2));
+                    }
+                }
+            }
+
+            // Get furthest from player start
+            XY currentTile = null;
+            var currentDistance = 0;
+
+            foreach(var tile in mainRoadTiles)
+            {
+                var distance = Math.Abs((tile - PlayerStart).X) + Math.Abs((tile - PlayerStart).Y); 
+                if (distance > currentDistance)
+                {
+                    currentTile = tile;
+                    currentDistance = distance;
+                }
+            }
+
+            // Place ZULU there
+            var zulu = new Zulu(GlobalMap, this);
+            zulu.Location = currentTile;
+            Actors.Add(zulu);
+
+            var spaces = new List<XY>();
+
+            var dudesplaced = 0;
+
+            var tl = new XY(currentTile.X - 9, currentTile.X - 9);
+            var br = new XY(currentTile.Y + 9, currentTile.Y + 9);
+
+            for (var ix = tl.X; ix < br.X; ix++)
+            {
+                for (var iy = tl.Y; iy < br.Y; iy++)
+                {
+                    if (new XY(ix, iy).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1) && GlobalMap[ix, iy].Walkable
+                        && !Actors.Any(i=>i.Location == new XY(ix, iy)))
+                    {
+                        spaces.Add(new XY(ix, iy));
+                    }
+                }
+            }
+
+            while (dudesplaced < 10 && spaces.Count > 0)
+            {
+                var space = spaces.RandomItem();
+
+                Actor actor;
+                switch (GlobalRandom.Next(3))
+                {
+                    case 1:
+                        actor = new Knife(GlobalMap, this);
+                        actor.Sprite = 1;
+                        break;
+                    case 2:
+                        actor = new Brute(GlobalMap, this);
+                        actor.Sprite = 3;
+                        break;
+                    case 0:
+                    default:
+                        actor = new Lackey(GlobalMap, this);
+                        actor.Sprite = 2;
+                        break;
+                }
+
+                actor.Location = space;
+                Actors.Add(actor);
+                spaces.Remove(space);
+            }
         }
 
         #endregion

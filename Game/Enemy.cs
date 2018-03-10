@@ -13,6 +13,7 @@ namespace Game
         }
 
         protected int pushDistance = 1;
+        protected int stunTime = 0;
 
         public void WhatYouWannaDo()
         {
@@ -57,6 +58,10 @@ namespace Game
                     }
                 }
                 actor.GotHit(dmg);
+                if (stunTime != 0)
+                {
+                    actor.Stun(stunTime);
+                }
             };
         }
 

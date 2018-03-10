@@ -1,43 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset name="WorldTiles" tilewidth="64" tileheight="64" tilecount="72" columns="8">
- <image source="../MapTiles.png" width="512" height="576"/>
+<tileset name="WorldTiles" tilewidth="64" tileheight="64" tilecount="46" columns="8">
+ <image source="../MapTiles.png" width="512" height="64"/>
  <tile id="0">
   <properties>
-   <property name="walkable" type="bool" value="true"/>
+   <property name="isAny" type="bool" value="true"/>
+   <property name="isRoad" type="bool" value="false"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="false"/>
+   <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="1">
   <properties>
+   <property name="isAny" type="bool" value="false"/>
+   <property name="isRoad" type="bool" value="false"/>
+   <property name="isSidewalk" type="bool" value="true"/>
+   <property name="isWall" type="bool" value="false"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="2">
   <properties>
+   <property name="isAny" type="bool" value="false"/>
+   <property name="isRoad" type="bool" value="true"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="false"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="3">
   <properties>
-   <property name="walkable" type="bool" value="true"/>
+   <property name="isAny" type="bool" value="false"/>
+   <property name="isRoad" type="bool" value="false"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="true"/>
+   <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="4">
   <properties>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="isAny" type="bool" value="false"/>
+   <property name="isRoad" type="bool" value="true"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="true"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="5">
   <properties>
-   <property name="walkable" type="bool" value="false"/>
+   <property name="isAny" type="bool" value="false"/>
+   <property name="isRoad" type="bool" value="true"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="true"/>
+   <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
  <tile id="6">
   <properties>
+   <property name="isAny" type="bool" value="false"/>
+   <property name="isRoad" type="bool" value="false"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="true"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="7">
   <properties>
+   <property name="isAny" type="bool" value="false"/>
+   <property name="isRoad" type="bool" value="false"/>
+   <property name="isSidewalk" type="bool" value="false"/>
+   <property name="isWall" type="bool" value="true"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>

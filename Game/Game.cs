@@ -42,6 +42,8 @@ namespace Game
                 int? wallLid = i.Tiles.FirstOrDefault(j => j.Properties.ContainsKey("name") && j.Properties["name"] == "BaseWall")?.LocalTileIdentifier;
                 if (wallLid != null)
                     BaseWallTile = i.FirstGlobalIdentifier + wallLid.Value;
+
+                foreach (var j in i.Tiles) TileByGid.Add(j.LocalTileIdentifier + i.FirstGlobalIdentifier, j);
             }
 
             PrefabMap = newMap;
@@ -113,6 +115,7 @@ namespace Game
         private TiledMap PrefabMap;
         private List<Rectangle> Prefabs = new List<Rectangle>();
         public List<TiledMapTileset> Tilesets = new List<TiledMapTileset>();
+        public Dictionary<int, TiledMapTilesetTile> TileByGid = new Dictionary<int, TiledMapTilesetTile>();
 
         private int BaseAnyTile;
         private int BaseRoadTile;
@@ -604,18 +607,19 @@ namespace Game
                                             (int)i.Size.Width / PrefabMap.TileWidth, (int)i.Size.Height / PrefabMap.TileHeight)))
                 .ToList();
 
+            var lastToReplace = int.MaxValue;
+
             while (AnyMustReplace() && prefabRectangles.Count > 0)
             {
                 var currentPrefab = prefabRectangles.RandomItem();
-                var foundFits = FindFits(currentPrefab);
 
-                if (foundFits.Count == 0)
+                var toPlace = FindFits(currentPrefab);
+                if (toPlace == null)
                 {
                     prefabRectangles.Remove(currentPrefab);
                     continue;
                 }
 
-                var toPlace = foundFits.RandomItem();
                 var prefabLayer = PrefabMap.GetLayer<TiledMapTileLayer>("Tiles");
                 for (var ix = 0; ix < currentPrefab.Width; ++ix)
                 {
@@ -627,7 +631,8 @@ namespace Game
                         GlobalMap[g.X, g.Y] = new MapTile(Tilesets, prefabLayer.Tiles[p.X + p.Y * prefabLayer.Width].GlobalIdentifier);
                     }
                 }
-                System.Console.WriteLine($"Still to replace {CountMustReplace()}");
+                var thisToReplace = CountMustReplace(); 
+                lastToReplace = thisToReplace;
             }
         }
 
@@ -651,22 +656,29 @@ namespace Game
             return i;
         }
 
-        private List<XY> FindFits(Rectangle p)
+        private XY FindFits(Rectangle p)
         {
             var result = new List<XY>();
 
-            for (int ix = 0; ix < MapWidth; ++ix)
+            var tested = 0;
+            var ix = GlobalRandom.Next(MapWidth);
+            var iy = GlobalRandom.Next(MapHeight);
+            while (tested < MapWidth * MapHeight)
             {
-                for (int iy = 0; iy < MapHeight; ++iy)
+                ++tested;
+                if (ix++ >= MapWidth)
                 {
-                    if (Fits(new XY(ix, iy), p))
+                    ix = 0;
+                    if (iy++ >= MapHeight)
                     {
-                        result.Add(new XY(ix, iy));
+                        iy = 0; 
                     }
                 }
+                if (Fits(new XY(ix, iy), p))
+                    return (new XY(ix, iy));
             }
 
-            return result;
+            return null;
         }
 
         private bool Fits(XY offset, Rectangle p)
@@ -679,24 +691,24 @@ namespace Game
                     var globalXy = new XY(ix, iy) + offset;
                     if (!globalXy.ContainedBy(0, 0, MapWidth- 1, MapHeight - 1)) return false;
                     var prefabXy = new XY(ix, iy) + new XY(p.X, p.Y);
-                    var prefabMapTile = prefabLayer .Tiles[prefabXy.X + prefabXy.Y * PrefabMap.GetLayer<TiledMapTileLayer>("Tiles").Width];
-                    var prefabTile = GetDamnedTile(prefabMapTile.GlobalIdentifier);
+                    var prefabMapTile = prefabLayer .Tiles[prefabXy.X + prefabXy.Y * prefabLayer.Width];
+                    var prefabTile = TileByGid[prefabMapTile.GlobalIdentifier];
                     var curTile = GlobalMap[globalXy.X, globalXy.Y];
 
-                    if (curTile.IsAny) continue;
-                    if (curTile.IsRoad && prefabTile.Properties.ContainsKey("isRoad") && prefabTile.Properties["isRoad"] == "true") continue;
-                    if (curTile.IsSidewalk && prefabTile.Properties.ContainsKey("isSidewalk") && prefabTile.Properties["isSidewalk"] == "true") continue;
-                    if (curTile.IsWall && prefabTile.Properties.ContainsKey("isWall") && prefabTile.Properties["isWall"] == "true") continue;
-                    return false;
+                    if (!curTile.MustReplace)
+                    {
+                        return false;
+                    }
+                    if (curTile.IsRoad && prefabTile.Properties.ContainsKey("isRoad") && prefabTile.Properties["isRoad"] == "true") { continue; }
+                    else
+                        if (!curTile.IsRoad && prefabTile.Properties.ContainsKey("isRoad") && prefabTile.Properties["isRoad"] == "true") { return false; }
+                    if (curTile.IsSidewalk && prefabTile.Properties.ContainsKey("isSidewalk") && prefabTile.Properties["isSidewalk"] == "true") { continue; }
+                    if (curTile.IsWall && prefabTile.Properties.ContainsKey("isWall") && prefabTile.Properties["isWall"] == "true") { continue; }
+                    if (curTile.IsAny) { if (prefabTile.Properties.ContainsKey("isRoad")) continue; }
+                    else return false;
                 }
             }
             return true;
-        }
-
-        private TiledMapTilesetTile GetDamnedTile(int gid)
-        {
-            var tileset = Tilesets.First(i => i.ContainsGlobalIdentifier(gid));
-            return tileset.Tiles.First(i => i.LocalTileIdentifier == (gid - tileset.FirstGlobalIdentifier));
         }
     }
 }

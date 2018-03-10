@@ -25,10 +25,10 @@ namespace Game
             DrawTile = tile.LocalTileIdentifier;
             MustReplace = tile.Properties.ContainsKey("mustReplace") && tile.Properties["mustReplace"] == "true";
 
-            bool IsAny = tile.Properties.ContainsKey("isAny") && tile.Properties["isAny"] == "true";
-            bool IsRoad = tile.Properties.ContainsKey("isAny") && tile.Properties["isAny"] == "true";
-            bool IsSidewalk = tile.Properties.ContainsKey("isSidewalk") && tile.Properties["isSidewalk"] == "true";
-            bool IsWall = tile.Properties.ContainsKey("isWall") && tile.Properties["isWall"] == "true";
+            IsAny = tile.Properties.ContainsKey("isAny") && tile.Properties["isAny"] == "true";
+            IsRoad = tile.Properties.ContainsKey("isRoad") && tile.Properties["isRoad"] == "true";
+            IsSidewalk = tile.Properties.ContainsKey("isSidewalk") && tile.Properties["isSidewalk"] == "true";
+            IsWall = tile.Properties.ContainsKey("isWall") && tile.Properties["isWall"] == "true";
         }
 
         /// <summary>

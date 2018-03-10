@@ -309,7 +309,7 @@ namespace Desktop
                     // 5: Dodge
 
                     var action = (Actor.Action)(ix + iy * 3);
-                    var newLocation = G.Player.Location + new XY(ix, iy);
+                    var newLocation = G.Player.Location + new XY(ix - 1, iy - 1);
 
                     if (G.CurrentPhase == Game.Game.TurnPhases.Player)
                     {

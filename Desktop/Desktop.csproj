@@ -162,7 +162,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rem c:\itch.io\butler.exe push $(TargetDir) nerdygentleman/7drl18:lastbuild</PostBuildEvent>
+    <PostBuildEvent>c:\itch.io\butler.exe push $(TargetDir) nerdygentleman/7drl18:$(ConfigurationName)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

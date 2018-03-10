@@ -78,9 +78,6 @@ namespace Game
             GenerateMap();
             ProgressReporter?.Invoke(90, "Placing mobs...");
             GenerateMobs();
-            ProgressReporter?.Invoke(99, "Placing Zulu...");
-            GenerateZulu();
-
             Player.Location = PlayerStart;
         }
 
@@ -260,10 +257,6 @@ enigmatic ZULU has taken firm control of the streets",
                     // straight back to the player one
                     if (NoVisible())
                     {
-                        if (zulu.active)
-                        {
-                            zulu.DoTurn();
-                        }
                         NextTurn();
                     }
                     break;
@@ -303,20 +296,27 @@ enigmatic ZULU has taken firm control of the streets",
             }
             Actors.RemoveAll(i => i.HP <= 0);
 
-            if ((DeadKnifes + DeadBrutes + DeadLackeys) == 10)
+            if (trigger10 && (DeadKnifes + DeadBrutes + DeadLackeys) >= 10)
             {
+                trigger10 = false;
                 TellStory("Huh. Somebody's fighting back in Sector C. I like it.");
             }
-            if ((DeadKnifes + DeadBrutes + DeadLackeys) == 20)
+            if (trigger20 && (DeadKnifes + DeadBrutes + DeadLackeys) >= 18)
             {
+                trigger20 = false;
                 TellStory("Jack? Please dispatch some men to Sector B - this is getting too close.");
             }
-            if ((DeadKnifes + DeadBrutes + DeadLackeys) == 20)
+            if (trigger30 && (DeadKnifes + DeadBrutes + DeadLackeys) >= 25)
             {
-                TellStory("Dammit Jack. They're dead. I'm coming for you myself. You hear me?");
-                zulu.active = true;
+                trigger30 = false;
+                TellStory("Dammit Jack. They're dead. How about we end this here?", "You hear a thundering explosion nearby", "No doubt you can see me on that fancy crime-wizz. Come get me.");
+                GenerateZulu();
             } 
         }
+
+        bool trigger10 = true;
+        bool trigger20 = true;
+        bool trigger30 = true;
 
 
         public XY ActiveTopLeft
@@ -849,23 +849,47 @@ enigmatic ZULU has taken firm control of the streets",
                 }
             }
 
-            // Get furthest from player start
-            XY currentTile = null;
-            var currentDistance = 0;
-
-            foreach(var tile in mainRoadTiles)
+            // Get at least 20 from player
+            foreach(var tile in new List<XY>(mainRoadTiles))
             {
-                var distance = Math.Abs((tile - PlayerStart).X) + Math.Abs((tile - PlayerStart).Y); 
-                if (distance > currentDistance)
+                var distance = Math.Abs((tile - Player.Location).X) + Math.Abs((tile - Player.Location).Y); 
+                if (distance < 20)
                 {
-                    currentTile = tile;
-                    currentDistance = distance;
+                    mainRoadTiles.Remove(tile);
+                }
+            }
+
+            var currentTile = mainRoadTiles.RandomItem();
+
+            // Get boom boom
+            var bombedLayed = (TiledMapObjectLayer)PrefabMap.GetLayer("Bomb");
+            var prefabLayer = PrefabMap.GetLayer<TiledMapTileLayer>("Tiles");
+            var bombedRectRaw = bombedLayed.Objects.First();
+            var bombedPrefabRect = new Rectangle((int)bombedRectRaw.Position.X / PrefabMap.TileHeight, (int)bombedRectRaw.Position.Y / PrefabMap.TileHeight,
+                (int)bombedRectRaw.Size.Height / PrefabMap.TileHeight, (int)bombedRectRaw.Size.Height / PrefabMap.TileHeight);
+            var o = currentTile - new XY(bombedPrefabRect.Width / 2, bombedPrefabRect.Height / 2);
+
+            for (var ix = 0; ix < bombedPrefabRect.Width; ++ix)
+            {
+                for (var iy = 0; iy < bombedPrefabRect.Height; ++iy)
+                {
+                    var offset = new XY(ix, iy);
+                    var global = o + offset;
+                    var prefab = new XY(bombedPrefabRect.X, bombedPrefabRect.Y) + offset;
+
+                    if(prefabLayer.Tiles[prefab.X + prefab.Y * prefabLayer.Width].GlobalIdentifier != 0)
+                    { 
+                        var tile = new MapTile(Tilesets, prefabLayer.Tiles[prefab.X + prefab.Y * prefabLayer.Width].GlobalIdentifier);
+                        if (!tile.IsAny )
+                            GlobalMap[global.X, global.Y] = tile;
+                    }
                 }
             }
 
             // Place ZULU there
             zulu = new Zulu(GlobalMap, this);
             zulu.Location = currentTile;
+            zulu.Sprite = 4;
             Actors.Add(zulu);
 
             var spaces = new List<XY>();
@@ -887,7 +911,7 @@ enigmatic ZULU has taken firm control of the streets",
                 }
             }
 
-            while (dudesplaced < 10 && spaces.Count > 0)
+            while (dudesplaced < 18 && spaces.Count > 0)
             {
                 var space = spaces.RandomItem();
 
@@ -912,6 +936,7 @@ enigmatic ZULU has taken firm control of the streets",
                 actor.Location = space;
                 Actors.Add(actor);
                 spaces.Remove(space);
+                dudesplaced++;
             }
         }
 

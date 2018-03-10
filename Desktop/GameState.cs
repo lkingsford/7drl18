@@ -60,6 +60,7 @@ namespace Desktop
             arrowHeight = MovementArrowsSprite.Height / 3;
 
             minimap = new Minimap(Game, MonogameGame);
+            minimap.showCrime = true;
         }
 
         Texture2D MapTileSprites;

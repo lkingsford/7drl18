@@ -54,15 +54,6 @@ namespace Game
             {
                 for (int iy = 0; iy < MapHeight; ++iy)
                 {
-                    var tileId = 0;
-                    //map.TileLayers[0].Tiles[ix + iy * MapWidth].GlobalIdentifier;
-                    //string walkableValue = null;
-
-                    //tiledTileset = map.GetTilesetByTileGlobalIdentifier(tileId);
-                    //tiledTileset = map.Tilesets[0];
-                    //var tiledTile = tiledTileset.Tiles[tileId - tiledTileset.FirstGlobalIdentifier];
-                    //tiledTile?.Properties.TryGetValue("walkable", out walkableValue);
-                    //var walkable = walkableValue != null ? walkableValue == "true" : false;
                     var walkable = true;
 
                     GlobalMap[ix, iy] = new MapTile(Tilesets, BaseAnyTile);
@@ -108,6 +99,7 @@ namespace Game
 
             GenerateMetamap();
             GenerateMap();
+            GenerateMobs();
 
             Player.Location = new XY(MetaTileWidth * Metamap.GetLength(0) / 2, MetaTileHeight * Metamap.GetLength(1) / 2);
         }
@@ -301,6 +293,8 @@ namespace Game
 
         public Player Player;
 
+        #region Metamap generation
+
         /// <summary>
         /// Generate the map to base prefabs off
         /// </summary>
@@ -488,6 +482,8 @@ namespace Game
             }
         }
 
+        #endregion
+        #region Macrogeneration
 
         /// <summary>
         /// Make a tile for a tile
@@ -715,5 +711,62 @@ namespace Game
             }
             return true;
         }
+        #endregion
+
+        #region Mob generation
+
+        void GenerateMobs(int amountOfMobs = 15)
+        {
+            int mobsPlaced = 0;
+            do
+            {
+                var ox = GlobalRandom.Next(MapWidth);
+                var oy = GlobalRandom.Next(MapHeight);
+
+                var count = GlobalRandom.Next(5, 15);
+
+                var spaceNeeded = count * 5;
+
+                var spaces = new List<XY>();
+
+                var dudesplaced = 0;
+
+                var tl = new XY(ox - count / 2, oy - count / 2);
+                var br = new XY(ox + count / 2, oy + count / 2);
+
+                for (var ix = tl.X; ix < br.X; ix++)
+                {
+                    for (var iy = tl.Y; iy < br.Y; iy++)
+                    {
+                        if (new XY(ix, iy).ContainedBy(0, 0, MapWidth - 1, MapHeight - 1) && GlobalMap[ix, iy].Walkable)
+                        {
+                            spaces.Add(new XY(ix, iy));
+                        }
+                    }
+                }
+
+                if (spaces.Count < spaceNeeded) continue;
+
+                for (var i = 0; i<count;++i)
+                {
+                    var space = spaces.RandomItem();
+
+                    var actor = new Enemy(GlobalMap, this);
+                    actor.Sprite = 1;
+                    actor.Location = space;
+                    Actors.Add(actor);
+                    spaces.Remove(space);
+                }
+
+                do
+                {
+                    dudesplaced++;
+                } while (dudesplaced < count);
+
+                mobsPlaced++;
+            } while (mobsPlaced < amountOfMobs);
+        }
+
+        #endregion
     }
 }

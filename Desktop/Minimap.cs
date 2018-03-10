@@ -20,10 +20,13 @@ namespace Desktop
         {
             this.G = Game;
             MinimapTileSprites = AppContentManager.Load<Texture2D>("MinimapTiles");
+            CrimeRateSprite = AppContentManager.Load<Texture2D>("CrimeRate");
         }
 
         Texture2D MinimapTileSprites;
+        private Texture2D CrimeRateSprite;
         private Game.Game G;
+        public bool showCrime = false;
 
         public override void Draw(GameTime GameTime)
         {
@@ -151,6 +154,24 @@ namespace Desktop
                 }
             }
 
+            if (showCrime)
+            {
+                for (var ix = 0; ix < G.Metamap.GetLength(0); ++ix)
+                {
+                    for (var iy = 0; iy < G.Metamap.GetLength(1); ++iy)
+                    {
+                        var enemies = G.Actors.Where(i => (i.Location.X / G.MetaTileWidth == ix) && (i.Location.Y / G.MetaTileHeight == iy)).Count();
+                        var crimeLevel = enemies == 0 ? 0 : Math.Min(enemies / 6, 4) + 1;
+                        AppSpriteBatch.Draw(CrimeRateSprite,
+                            new Rectangle(drawLeft + (ix) * tileWidth,
+                              drawTop + (iy) * tileHeight,
+                              tileWidth, tileHeight),
+                        new Rectangle(crimeLevel * tileWidth, 0, tileWidth, tileHeight),
+                        Color.White);
+                    }
+                }
+            }
+
             if (G.Player != null)
             {
                 int srcY = 3;
@@ -162,7 +183,6 @@ namespace Desktop
                     new Rectangle(srcX * tileWidth, srcY * tileHeight, tileWidth, tileHeight),
                     Color.White);
             }
-
         }
     }
 }

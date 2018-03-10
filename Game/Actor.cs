@@ -31,13 +31,15 @@ namespace Game
         {
             var newLocation = Location + dxDy;
 
-            var occupier = game.Actors.FirstOrDefault(i => i != this && i.Location == newLocation);
+            var occupier = game.Actors.FirstOrDefault(i => i.Location == newLocation);
 
-            if (occupier != null)
+            if (occupier != null && !(this is Enemy) && !(occupier is Enemy))
             {
                 Hit(occupier);
             }
-            else if (newLocation.X > 0 &&
+            else if (
+                occupier == null &&
+                newLocation.X > 0 &&
                 newLocation.X < gameMap.GetLength(0) &&
                 newLocation.Y > 0 &&
                 newLocation.Y < gameMap.GetLength(1) &&

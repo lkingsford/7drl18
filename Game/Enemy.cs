@@ -9,6 +9,7 @@ namespace Game
     {
         public Enemy(MapTile[,] globalMap, Game game) : base(globalMap, game)
         {
+            HP = 6;
         }
 
         public void WhatYouWannaDo()
@@ -31,7 +32,7 @@ namespace Game
         {
             get
             {
-                return toAttack && !Stunned; 
+                return game.CurrentPhase == Game.TurnPhases.Enemy && toAttack && !Stunned; 
             }
         }
 
@@ -51,6 +52,12 @@ namespace Game
                 }
                 base.Hit(actor, dmg);
             }
+        }
+
+        public override void GotHit(int damage)
+        {
+            Stun(1);
+            base.GotHit(damage);
         }
     }
 }

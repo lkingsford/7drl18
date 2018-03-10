@@ -751,8 +751,24 @@ namespace Game
                 {
                     var space = spaces.RandomItem();
 
-                    var actor = new Enemy(GlobalMap, this);
-                    actor.Sprite = 1;
+                    Actor actor;
+                    switch (GlobalRandom.Next(3))
+                    { 
+                        case 1:
+                            actor = new Enemy(GlobalMap, this);
+                            actor.Sprite = 1;
+                            break;
+                        case 2:
+                            actor = new Brute(GlobalMap, this);
+                            actor.Sprite = 3;
+                            break;
+                        case 0:
+                        default:
+                            actor = new Enemy(GlobalMap, this);
+                            actor.Sprite = 2;
+                            break;
+                    }
+
                     actor.Location = space;
                     Actors.Add(actor);
                     spaces.Remove(space);

@@ -9,6 +9,7 @@ namespace Game
     {
         public Player(MapTile[,] globalMap, Game game) : base(globalMap, game)
         {
+            HP = 8;
         }
 
         /// <summary>
@@ -159,7 +160,6 @@ namespace Game
                 actor.Stun(1);
             }
             actor.GotHit(Math.Max(Momentum, 1));
-            actor.Stun(1);
         }
 
         /// <summary>

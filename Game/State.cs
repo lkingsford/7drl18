@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Input.InputListeners;
+using MonoGame.Extended.NuclexGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +50,10 @@ namespace Game
         /// The Monogame Game
         /// </summary>
         static public Microsoft.Xna.Framework.Game GameApp;
+
+        static protected InputListenerComponent inputListener;
+        static protected GuiInputService inputManager;
+        static protected GuiManager gui;
 
         /// <summary>
         /// Run logic for this state - including input

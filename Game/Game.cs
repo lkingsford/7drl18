@@ -13,11 +13,17 @@ namespace Game
     /// </summary>
     public class Game
     {
+        public delegate void ReportProgress(int percentage, string message);
+
         /// <summary>
         /// Default constructor
         /// </summary>
-        public Game(ContentManager content)
+        public Game(ContentManager content, ReportProgress reporter = null)
         {
+            ProgressReporter = reporter;
+
+            ProgressReporter?.Invoke(0, "Loading Prefabs...");
+
             Content = content;
 
             var newMap = Content.Load<TiledMap>($"Maps/Prefabs");
@@ -60,49 +66,22 @@ namespace Game
                 }
             }
 
-            //// Tiled stores objects with pixels - hence, needing to do the math here
-            //foreach (var o in map.GetLayer<TiledMapObjectLayer>("spawn").Objects)
-            //{
-            //    var tileX = (int)o.Position.X / map.TileWidth;
-            //    var tileY = (int)o.Position.Y / map.TileHeight;
-
-            //    Actor actor;
-
-            //    switch (o.Name)
-            //    {
-            //        case "pc":
-            //            actor = new Player(GlobalMap, this);
-            //            Player = (Player)actor;
-            //            break;
-            //        case "bad":
-            //            actor = new Enemy(GlobalMap, this);
-            //            actor.Sprite = 1;
-            //            break;
-            //        case "knife":
-            //            actor = new Enemy(GlobalMap, this);
-            //            actor.Sprite = 2;
-            //            break;
-            //        default:
-            //            // Bad.
-            //            // TODO: Log
-            //            continue;
-            //    }
-
-            //    actor.Location = new XY(tileX, tileY);
-            //    Actors.Add(actor);
-            //}
-
             Player = new Player(GlobalMap, this);
             Actors.Add(Player);
 
             // Generate metamap
 
+            ProgressReporter?.Invoke(10, "Building road network...");
             GenerateMetamap();
+            ProgressReporter?.Invoke(20, "Generating map...");
             GenerateMap();
+            ProgressReporter?.Invoke(90, "Placing mobs...");
             GenerateMobs();
 
             Player.Location = new XY(MetaTileWidth * Metamap.GetLength(0) / 2, MetaTileHeight * Metamap.GetLength(1) / 2);
         }
+
+        private ReportProgress ProgressReporter = null;
 
         private TiledMap PrefabMap;
         private List<Rectangle> Prefabs = new List<Rectangle>();
@@ -610,6 +589,8 @@ namespace Game
 
             var lastToReplace = int.MaxValue;
 
+            var startToReplace = CountMustReplace();
+
             while (AnyMustReplace() && prefabRectangles.Count > 0)
             {
                 var currentPrefab = prefabRectangles.RandomItem();
@@ -632,8 +613,10 @@ namespace Game
                         GlobalMap[g.X, g.Y] = new MapTile(Tilesets, prefabLayer.Tiles[p.X + p.Y * prefabLayer.Width].GlobalIdentifier);
                     }
                 }
+
                 var thisToReplace = CountMustReplace(); 
                 lastToReplace = thisToReplace;
+                ProgressReporter?.Invoke(20 + (int)(70.0 * (float)startToReplace / (float)thisToReplace), $"Generating map ({thisToReplace} of {startToReplace} remaining)...");
             }
         }
 

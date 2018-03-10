@@ -241,7 +241,7 @@ namespace Game
         /// Dudes who can get parried
         /// </summary>
         /// <returns></returns>
-        public List<Actor> CanParry()
+        public new List<Actor> CanParry()
         {
             return game.Actors.Where(i => (i as Enemy)?.Attacking ?? false && ((i as Enemy)?.CanParry ?? false) && Location.Adjacent(i.Location)).ToList();
         }

@@ -33,7 +33,8 @@ namespace Game
 
             var occupier = game.Actors.FirstOrDefault(i => i.Location == newLocation);
 
-            if (occupier != null && !(this is Enemy) && !(occupier is Enemy))
+            if (occupier != null && (((this is Enemy) && !(occupier is Enemy))
+                || (!(this is Enemy) && (occupier is Enemy))))
             {
                 Hit(occupier);
             }

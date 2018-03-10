@@ -103,6 +103,12 @@ namespace Desktop
         /// <param name="GameTime">Snapshot of timing</param>
         public override void Update(GameTime GameTime)
         {
+            if (G.Player.HP == 0)
+            {
+                // Player Dead
+                Dead();
+            }
+
             if (lastActionTime == null)
             {
                 lastActionTime = GameTime.TotalGameTime;
@@ -136,6 +142,12 @@ namespace Desktop
 
             //inputListener.Update(GameTime);
             //gui.Update(GameTime);
+        }
+
+        private void Dead()
+        {
+            StateStack.Remove(this);
+            StateStack.Add(new DeadState(G));
         }
 
         /// <summary>

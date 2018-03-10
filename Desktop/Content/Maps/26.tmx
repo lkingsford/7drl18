@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.2" orientation="orthogonal" renderorder="right-down" width="9" height="9" tilewidth="64" tileheight="64" infinite="0" nextobjectid="1">
+ <tileset firstgid="1" source="Road.tsx"/>
+ <layer name="Tile Layer 1" width="9" height="9">
+  <data encoding="csv">
+32,5,5,5,5,5,5,16,14,
+31,5,5,5,5,5,5,16,8,
+25,4,9,26,18,17,11,4,28,
+2,19,26,19,25,3,18,27,25,
+36,36,28,25,19,27,18,37,35,
+27,2,18,28,10,27,3,4,27,
+4,28,3,10,10,10,10,17,28,
+21,5,28,2,41,20,4,7,15,
+32,5,20,28,41,25,10,23,7
+</data>
+ </layer>
+</map>

@@ -7,6 +7,7 @@
    <property name="isRoad" type="bool" value="false"/>
    <property name="isSidewalk" type="bool" value="false"/>
    <property name="isWall" type="bool" value="false"/>
+   <property name="mustReplace" type="bool" value="true"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
@@ -16,6 +17,7 @@
    <property name="isRoad" type="bool" value="false"/>
    <property name="isSidewalk" type="bool" value="true"/>
    <property name="isWall" type="bool" value="false"/>
+   <property name="mustReplace" type="bool" value="true"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -25,6 +27,7 @@
    <property name="isRoad" type="bool" value="true"/>
    <property name="isSidewalk" type="bool" value="false"/>
    <property name="isWall" type="bool" value="false"/>
+   <property name="mustReplace" type="bool" value="true"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -34,6 +37,7 @@
    <property name="isRoad" type="bool" value="false"/>
    <property name="isSidewalk" type="bool" value="false"/>
    <property name="isWall" type="bool" value="true"/>
+   <property name="mustReplace" type="bool" value="true"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>
@@ -43,6 +47,7 @@
    <property name="isRoad" type="bool" value="true"/>
    <property name="isSidewalk" type="bool" value="false"/>
    <property name="isWall" type="bool" value="true"/>
+   <property name="mustReplace" type="bool" value="true"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -52,6 +57,7 @@
    <property name="isRoad" type="bool" value="true"/>
    <property name="isSidewalk" type="bool" value="false"/>
    <property name="isWall" type="bool" value="true"/>
+   <property name="mustReplace" type="bool" value="true"/>
    <property name="walkable" type="bool" value="true"/>
   </properties>
  </tile>
@@ -61,6 +67,7 @@
    <property name="isRoad" type="bool" value="false"/>
    <property name="isSidewalk" type="bool" value="false"/>
    <property name="isWall" type="bool" value="true"/>
+   <property name="mustReplace" type="bool" value="true"/>
    <property name="walkable" type="bool" value="false"/>
   </properties>
  </tile>

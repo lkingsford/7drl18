@@ -755,7 +755,7 @@ namespace Game
                     switch (GlobalRandom.Next(3))
                     { 
                         case 1:
-                            actor = new Enemy(GlobalMap, this);
+                            actor = new Knife(GlobalMap, this);
                             actor.Sprite = 1;
                             break;
                         case 2:

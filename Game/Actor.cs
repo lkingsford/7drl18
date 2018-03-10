@@ -124,5 +124,13 @@ namespace Game
         {
             HP -= damage;
         }
+
+        public virtual bool CanParry
+        {
+            get
+            {
+                return true;
+            }
+        }
     }
 }

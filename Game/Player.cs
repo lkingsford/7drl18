@@ -243,7 +243,7 @@ namespace Game
         /// <returns></returns>
         public List<Actor> CanParry()
         {
-            return game.Actors.Where(i => (i as Enemy)?.Attacking ?? false && Location.Adjacent(i.Location)).ToList();
+            return game.Actors.Where(i => (i as Enemy)?.Attacking ?? false && ((i as Enemy)?.CanParry ?? false) && Location.Adjacent(i.Location)).ToList();
         }
 
         public bool CanWalk(XY newLocation)

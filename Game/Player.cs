@@ -58,7 +58,7 @@ namespace Game
                         {
                             // Parry
                             var toParry = CanParry();
-                            if (Momentum > toParry.Count())
+                            if (Momentum >= toParry.Count())
                             {
                                 SpendMomentum(toParry.Count());
                                 foreach (var baddie in toParry)
@@ -213,7 +213,7 @@ namespace Game
 
                         var location = Location + new XY(ix, iy);
                         var firstbad = game.Actors.FirstOrDefault(i => i != this && i.Location == location);
-                        if (firstbad != null && ((firstbad as Enemy)?.Attacking ?? false))
+                        if ((Momentum > 0) && firstbad != null && ((firstbad as Enemy)?.Attacking ?? false))
                         {
                             // Attacking from a dir, so can go backwards - if nobody there
                             // Invert ix and iy to get allowed direction
@@ -228,7 +228,7 @@ namespace Game
                 }
 
                 // Parry allowed
-                if (CanParry().Count > 0 && Momentum > CanParry().Count)
+                if (CanParry().Count > 0 && Momentum >= CanParry().Count)
                 {
                     result.Add(Action.Parry);
                 }

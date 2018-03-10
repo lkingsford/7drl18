@@ -723,7 +723,7 @@ namespace Game
                 var ox = GlobalRandom.Next(MapWidth);
                 var oy = GlobalRandom.Next(MapHeight);
 
-                var count = GlobalRandom.Next(5, 15);
+                var count = GlobalRandom.Next(6, 20);
 
                 var spaceNeeded = count * 5;
 

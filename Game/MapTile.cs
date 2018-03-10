@@ -18,11 +18,17 @@ namespace Game
         public MapTile(List<TiledMapTileset> Tilesets, int gid)
         {
             Tileset = Tilesets.First(i => i.ContainsGlobalIdentifier(gid));
-            var tile = Tileset.Tiles[gid - Tileset.FirstGlobalIdentifier];
+            var tile = Tileset.Tiles.First(i => i.LocalTileIdentifier == (gid - Tileset.FirstGlobalIdentifier));
             Walkable = tile.Properties.ContainsKey("walkable") && tile.Properties["walkable"] == "true";
             tile.Properties.TryGetValue("brushPriority", out string brushPriority);
             int.TryParse(brushPriority, out BrushPriority);
             DrawTile = tile.LocalTileIdentifier;
+            MustReplace = tile.Properties.ContainsKey("mustReplace") && tile.Properties["mustReplace"] == "true";
+
+            bool IsAny = tile.Properties.ContainsKey("isAny") && tile.Properties["isAny"] == "true";
+            bool IsRoad = tile.Properties.ContainsKey("isAny") && tile.Properties["isAny"] == "true";
+            bool IsSidewalk = tile.Properties.ContainsKey("isSidewalk") && tile.Properties["isSidewalk"] == "true";
+            bool IsWall = tile.Properties.ContainsKey("isWall") && tile.Properties["isWall"] == "true";
         }
 
         /// <summary>
@@ -41,5 +47,12 @@ namespace Game
         public readonly int BrushPriority = 0;
 
         public readonly TiledMapTileset Tileset;
+
+        public readonly bool MustReplace = false;
+
+        public readonly bool IsAny = true;
+        public readonly bool IsRoad = true;
+        public readonly bool IsSidewalk = true;
+        public readonly bool IsWall = true;
     }
 }

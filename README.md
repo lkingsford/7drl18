@@ -8,6 +8,14 @@ follow development on [twitter](https://twitter.com/thelochok).
 The game is an attempt to take Batman Arkham Asylum/Arkham City/Shadows of 
 Mordor style combat into the turn based space.
 
+# Special Note (For other programmers)
+
+This game was hacked together in 7 days. It's not indicative of my normal 
+style - it's instead very rushed, sometimes using bad algorithms or techniques,
+sometimes with code that I would reject out of hand in code review due to
+bad variable names, comments, code grammar etc. Please don't judge me too
+harshly.
+
 # Rules (so far)
 
 ## Implemented combat rules
@@ -27,8 +35,3 @@ Mordor style combat into the turn based space.
 
 ## Other rules
 - If no enemies in sight, move freely
-
-
-# Todo list
-[ ] *BUG:* Instakill on parry
-[ ] *BUG:* Can dodge into overlap

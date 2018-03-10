@@ -23,12 +23,12 @@ namespace Game
             var newMap = Content.Load<TiledMap>($"Maps/Prefabs");
 
             // Load tilesets
-            foreach(var tileset in newMap.Tilesets)
+            foreach (var tileset in newMap.Tilesets)
             {
                 Tilesets.Add(tileset);
             }
 
-            foreach(var i in Tilesets)
+            foreach (var i in Tilesets)
             {
                 int? anyLid = i.Tiles.FirstOrDefault(j => j.Properties.ContainsKey("name") && j.Properties["name"] == "BaseAny")?.LocalTileIdentifier;
                 if (anyLid != null)
@@ -99,13 +99,15 @@ namespace Game
             //    Actors.Add(actor);
             //}
 
-            Player =new Player(GlobalMap, this);
+            Player = new Player(GlobalMap, this);
             Actors.Add(Player);
 
             // Generate metamap
 
             GenerateMetamap();
             GenerateMap();
+
+            Player.Location = new XY(MetaTileWidth * Metamap.GetLength(0) / 2, MetaTileHeight * Metamap.GetLength(1) / 2);
         }
 
         private TiledMap PrefabMap;
@@ -189,7 +191,7 @@ namespace Game
         {
             get
             {
-                return Actors.Where(i => 
+                return Actors.Where(i =>
                     i.Location.ContainedBy(CameraTopLeft.X, CameraTopLeft.Y,
                                            CameraTopLeft.X + CameraWidth - 1, CameraTopLeft.Y + CameraHeight - 1)).ToList().AsReadOnly();
             }
@@ -252,7 +254,7 @@ namespace Game
 
                     // If no enemies in sight, do their phase and go
                     // straight back to the player one
-                    if (!VisibleActors.Any(i=>(i is Enemy)))
+                    if (!VisibleActors.Any(i => (i is Enemy)))
                     {
                         NextTurn();
                     }
@@ -442,7 +444,7 @@ namespace Game
                 Metamap[thisPoint.X, thisPoint.Y].Add((MetamapTile)(thisDirection + (4 * (2 - majorness))));
                 Metamap[n.X, n.Y].Add((MetamapTile)(nextDirection + (4 * (2 - majorness))));
                 Road(n, dxdy, windy, majorness, keepGoingChance);
-                
+
                 double newRoadChance = (double)majorness / 6.0;
 
                 if (GlobalRandom.NextDouble() < newRoadChance)
@@ -487,7 +489,7 @@ namespace Game
         {
             var thisTileOrigin = new XY(xy.X * MetaTileWidth, xy.Y * MetaTileHeight);
 
-            foreach(var toMake in tile)
+            foreach (var toMake in tile)
             {
                 var roadType = (int)toMake / 4;
                 var roadDirection = (int)toMake % 4;
@@ -497,7 +499,7 @@ namespace Game
                         {
                             // North
                             int x = thisTileOrigin.X + MetaTileWidth / 2;
-                            for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y <= thisTileOrigin.Y; --y)
+                            for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y >= thisTileOrigin.Y; --y)
                             {
                                 Brush(new XY(x, y), roadType);
                             }
@@ -507,7 +509,7 @@ namespace Game
                         // East
                         {
                             int y = thisTileOrigin.Y + MetaTileHeight / 2;
-                            for (int x = thisTileOrigin.X + MetaTileWidth / 2; x <= thisTileOrigin.X + MetaTileWidth; ++x)
+                            for (int x = thisTileOrigin.X + MetaTileWidth / 2; x < thisTileOrigin.X + MetaTileWidth; ++x)
                             {
                                 Brush(new XY(x, y), roadType);
                             }
@@ -517,17 +519,17 @@ namespace Game
                         // West
                         {
                             int y = thisTileOrigin.Y + MetaTileHeight / 2;
-                            for (int x = thisTileOrigin.X + MetaTileWidth / 2; x <= thisTileOrigin.X; --x)
+                            for (int x = thisTileOrigin.X + MetaTileWidth / 2; x >= thisTileOrigin.X; --x)
                             {
                                 Brush(new XY(x, y), roadType);
                             }
                             break;
                         }
                     case 3:
-                            // South
+                        // South
                         {
                             int x = thisTileOrigin.X + MetaTileWidth / 2;
-                            for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y <= thisTileOrigin.Y + MetaTileHeight; ++y)
+                            for (int y = thisTileOrigin.Y + MetaTileHeight / 2; y < thisTileOrigin.Y + MetaTileHeight; ++y)
                             {
                                 Brush(new XY(x, y), roadType);
                             }
@@ -553,13 +555,11 @@ namespace Game
                     BrushSet(new MapTile(Tilesets, BaseSidewalkTile), xyRect(xy - new XY(1, 1), xy + new XY(1, 1)));
                     break;
             }
-
-            Player.Location = xy;
         }
 
         private void BrushSet(MapTile tile, List<XY> todraw)
         {
-            foreach(var xy in todraw)
+            foreach (var xy in todraw)
                 if (xy.ContainedBy(0, 0, MapWidth - 1, MapHeight - 1))
                 {
                     if (tile.BrushPriority >= GlobalMap[xy.X, xy.Y].BrushPriority)
@@ -594,7 +594,109 @@ namespace Game
 
         private void ApplyPrefabs()
         {
+            // Get prefabs
+            // Abandon all hope ye who enter here
+            // This code is pretty rubbish
+            var prefabRectangles = ((TiledMapObjectLayer)PrefabMap
+                .GetLayer("MapRegion")).Objects
+                .Where(i => (i is TiledMapRectangleObject))
+                .Select(i => (new Rectangle((int)i.Position.X / PrefabMap.TileWidth, (int)i.Position.Y / PrefabMap.TileHeight,
+                                            (int)i.Size.Width / PrefabMap.TileWidth, (int)i.Size.Height / PrefabMap.TileHeight)))
+                .ToList();
 
+            while (AnyMustReplace() && prefabRectangles.Count > 0)
+            {
+                var currentPrefab = prefabRectangles.RandomItem();
+                var foundFits = FindFits(currentPrefab);
+
+                if (foundFits.Count == 0)
+                {
+                    prefabRectangles.Remove(currentPrefab);
+                    continue;
+                }
+
+                var toPlace = foundFits.RandomItem();
+                var prefabLayer = PrefabMap.GetLayer<TiledMapTileLayer>("Tiles");
+                for (var ix = 0; ix < currentPrefab.Width; ++ix)
+                {
+                    for (var iy = 0; iy < currentPrefab.Height; ++iy)
+                    {
+                        var i = new XY(ix, iy);
+                        var g = toPlace + i;
+                        var p = new XY(currentPrefab.X, currentPrefab.Y) + i;
+                        GlobalMap[g.X, g.Y] = new MapTile(Tilesets, prefabLayer.Tiles[p.X + p.Y * prefabLayer.Width].GlobalIdentifier);
+                    }
+                }
+                System.Console.WriteLine($"Still to replace {CountMustReplace()}");
+            }
+        }
+
+        private bool AnyMustReplace()
+        {
+            for (int ix = 0; ix < MapWidth; ++ix)
+                for (int iy = 0; iy < MapHeight; ++iy)
+                    if (GlobalMap[ix, iy].MustReplace)
+                        return true;
+            return false;
+        }
+
+
+        private int CountMustReplace()
+        {
+            var i = 0;
+            for (int ix = 0; ix < MapWidth; ++ix)
+                for (int iy = 0; iy < MapHeight; ++iy)
+                    if (GlobalMap[ix, iy].MustReplace)
+                        ++i;
+            return i;
+        }
+
+        private List<XY> FindFits(Rectangle p)
+        {
+            var result = new List<XY>();
+
+            for (int ix = 0; ix < MapWidth; ++ix)
+            {
+                for (int iy = 0; iy < MapHeight; ++iy)
+                {
+                    if (Fits(new XY(ix, iy), p))
+                    {
+                        result.Add(new XY(ix, iy));
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private bool Fits(XY offset, Rectangle p)
+        {
+            var prefabLayer = PrefabMap.GetLayer<TiledMapTileLayer>("Tiles");
+            for (int ix = 0; ix < p.Width; ++ix)
+            {
+                for (int iy = 0; iy < p.Height; ++iy)
+                {
+                    var globalXy = new XY(ix, iy) + offset;
+                    if (!globalXy.ContainedBy(0, 0, MapWidth- 1, MapHeight - 1)) return false;
+                    var prefabXy = new XY(ix, iy) + new XY(p.X, p.Y);
+                    var prefabMapTile = prefabLayer .Tiles[prefabXy.X + prefabXy.Y * PrefabMap.GetLayer<TiledMapTileLayer>("Tiles").Width];
+                    var prefabTile = GetDamnedTile(prefabMapTile.GlobalIdentifier);
+                    var curTile = GlobalMap[globalXy.X, globalXy.Y];
+
+                    if (curTile.IsAny) continue;
+                    if (curTile.IsRoad && prefabTile.Properties.ContainsKey("isRoad") && prefabTile.Properties["isRoad"] == "true") continue;
+                    if (curTile.IsSidewalk && prefabTile.Properties.ContainsKey("isSidewalk") && prefabTile.Properties["isSidewalk"] == "true") continue;
+                    if (curTile.IsWall && prefabTile.Properties.ContainsKey("isWall") && prefabTile.Properties["isWall"] == "true") continue;
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private TiledMapTilesetTile GetDamnedTile(int gid)
+        {
+            var tileset = Tilesets.First(i => i.ContainsGlobalIdentifier(gid));
+            return tileset.Tiles.First(i => i.LocalTileIdentifier == (gid - tileset.FirstGlobalIdentifier));
         }
     }
 }

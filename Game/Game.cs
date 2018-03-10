@@ -13,12 +13,13 @@ namespace Game
     /// </summary>
     public class Game
     {
-        public delegate void ReportProgress(int percentage, string message);
+        public delegate void ReportProgressDelegate(int percentage, string message);
+        public delegate void TellStoryDelegate(params string[] message);
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public Game(ContentManager content, ReportProgress reporter = null)
+        public Game(ContentManager content, ReportProgressDelegate reporter = null)
         {
             ProgressReporter = reporter;
 
@@ -85,8 +86,8 @@ namespace Game
 
         private XY PlayerStart;
 
-        private ReportProgress ProgressReporter = null;
-
+        private ReportProgressDelegate ProgressReporter = null;
+        public TellStoryDelegate TellStory = null;
         private TiledMap PrefabMap;
         private List<Rectangle> Prefabs = new List<Rectangle>();
         public List<TiledMapTileset> Tilesets = new List<TiledMapTileset>();
@@ -169,11 +170,22 @@ namespace Game
         {
             get
             {
-                return Actors.Where(i =>
+                var result =  Actors.Where(i =>
                     i.Location.ContainedBy(CameraTopLeft.X, CameraTopLeft.Y,
                                            CameraTopLeft.X + CameraWidth - 1, CameraTopLeft.Y + CameraHeight - 1)).ToList().AsReadOnly();
+
+
+                if (!zuluSeen && result.Any(i=>i is Zulu))
+                {
+                    TellStory("There's not even that much of you!", "Let's take this slow. Give the boys a show.", "I don't know who you are, I don't know what you did...", "... but you're going down.");
+                    zuluSeen = true;
+                }
+
+                return result;
             }
         }
+
+        bool zuluSeen = false;
 
         /// <summary>
         /// Actors in game 
@@ -215,6 +227,15 @@ namespace Game
             return !VisibleActors.Any(i => (i is Enemy));
         }
 
+        public void StartGame()
+        {
+            TellStory(@"It is New London, 19X3.
+The thick stench of the sewers almost hides a familiar sickly odour.",
+@"The Government has established borders around George Street: where the
+enigmatic ZULU has taken firm control of the streets",
+@"The death toll is too high and too close. It's time to reclaim London.");
+        }
+
         /// <summary>
         /// Do the next turn
         /// </summary>
@@ -239,6 +260,10 @@ namespace Game
                     // straight back to the player one
                     if (NoVisible())
                     {
+                        if (zulu.active)
+                        {
+                            zulu.DoTurn();
+                        }
                         NextTurn();
                     }
                     break;
@@ -269,7 +294,7 @@ namespace Game
 
         private void Hearse()
         {
-            foreach (var i in Actors.Where(i=>i.HP <= 0))
+            foreach (var i in Actors.Where(i => i.HP <= 0))
             {
                 if (i is Knife) DeadKnifes++;
                 if (i is Brute) DeadBrutes++;
@@ -277,6 +302,20 @@ namespace Game
                 if (i is Zulu) DeadZulu = true;
             }
             Actors.RemoveAll(i => i.HP <= 0);
+
+            if ((DeadKnifes + DeadBrutes + DeadLackeys) == 10)
+            {
+                TellStory("Huh. Somebody's fighting back in Sector C. I like it.");
+            }
+            if ((DeadKnifes + DeadBrutes + DeadLackeys) == 20)
+            {
+                TellStory("Jack? Please dispatch some men to Sector B - this is getting too close.");
+            }
+            if ((DeadKnifes + DeadBrutes + DeadLackeys) == 20)
+            {
+                TellStory("Dammit Jack. They're dead. I'm coming for you myself. You hear me?");
+                zulu.active = true;
+            } 
         }
 
 
@@ -763,10 +802,12 @@ namespace Game
                         case 1:
                             actor = new Knife(GlobalMap, this);
                             actor.Sprite = 1;
+                            ++i;
                             break;
                         case 2:
                             actor = new Brute(GlobalMap, this);
                             actor.Sprite = 3;
+                            i += 2;
                             break;
                         case 0:
                         default:
@@ -788,6 +829,8 @@ namespace Game
                 mobsPlaced++;
             } while (mobsPlaced < amountOfMobs);
         }
+
+        Zulu zulu;
 
         void GenerateZulu()
         {
@@ -821,7 +864,7 @@ namespace Game
             }
 
             // Place ZULU there
-            var zulu = new Zulu(GlobalMap, this);
+            zulu = new Zulu(GlobalMap, this);
             zulu.Location = currentTile;
             Actors.Add(zulu);
 
@@ -829,8 +872,8 @@ namespace Game
 
             var dudesplaced = 0;
 
-            var tl = new XY(currentTile.X - 9, currentTile.X - 9);
-            var br = new XY(currentTile.Y + 9, currentTile.Y + 9);
+            var tl = new XY(currentTile.X - 9, currentTile.Y - 9);
+            var br = new XY(currentTile.X + 9, currentTile.Y + 9);
 
             for (var ix = tl.X; ix < br.X; ix++)
             {

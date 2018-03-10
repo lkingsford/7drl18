@@ -11,6 +11,7 @@ using MonoGame.Extended.NuclexGui;
 using MonoGame.Extended.Input.InputListeners;
 using MonoGame.Extended.NuclexGui.Controls.Desktop;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.NuclexGui.Controls;
 
 namespace Desktop
 {
@@ -23,6 +24,12 @@ namespace Desktop
 
         protected Minimap minimap;
 
+        private GuiWindowControl storyWindow;
+        private GuiButtonControl storyButton;
+        private GuiLabelControl storyText;
+
+        private List<string> storyBeats = new List<string>();
+
         /// <summary>
         /// Create a game interface from a given game
         /// </summary>
@@ -30,6 +37,8 @@ namespace Desktop
         public GameState(Game.Game Game, Microsoft.Xna.Framework.Game MonogameGame)
         {
             this.G = Game;
+
+            this.G.TellStory = ShowStory;
 
             MapTileSprites = AppContentManager.Load<Texture2D>("MapTiles");
             PCSprites = AppContentManager.Load<Texture2D>("CharacterSprites");
@@ -45,6 +54,57 @@ namespace Desktop
 
             minimap = new Minimap(Game, MonogameGame);
             minimap.showCrime = true;
+
+            gui.Screen = new GuiScreen();
+
+            storyWindow = new GuiWindowControl()
+            {
+                Name = "StoryWindow",
+                Bounds = new UniRectangle(new UniVector(new UniScalar(190), new UniScalar(200)), new UniVector(new UniScalar(900), new UniScalar(200))),
+            };
+
+            storyText = new GuiLabelControl()
+            {
+                Name = "StoryText",
+                Bounds = new UniRectangle(new UniVector(new UniScalar(10), new UniScalar(0)), new UniVector(new UniScalar(500), new UniScalar(120))),
+            };
+            storyWindow.Children.Add(storyText);
+
+            storyButton = new GuiButtonControl()
+            {
+                Bounds = new UniRectangle(new UniVector(new UniScalar(375), new UniScalar(120)), new UniVector(new UniScalar(150), new UniScalar(70))),
+                Text = "Continue"
+            };
+            storyWindow.Children.Add(storyButton);
+            storyButton.Pressed += StoryButton_Pressed;
+
+            G.StartGame();
+        }
+
+        private void StoryButton_Pressed(object sender, EventArgs e)
+        {
+            storyBeats.RemoveAt(0);
+            if (storyBeats.Count == 0)
+            {
+                gui.Screen.Desktop.Children.Remove(storyWindow);
+            }
+            else
+            {
+                storyText.Text = storyBeats[0];
+            }
+        }
+
+        private void ShowStory(params string[] story)
+        {
+            foreach (var i in story)
+            {
+                storyBeats.Add(i);
+            }
+            if (!gui.Screen.Desktop.Children.Contains(storyWindow))
+            {
+                storyText.Text = storyBeats[0];
+                gui.Screen.Desktop.Children.Add(storyWindow);
+            }
         }
 
         Texture2D MapTileSprites;
@@ -72,6 +132,12 @@ namespace Desktop
         /// <param name="GameTime">Snapshot of timing</param>
         public override void Update(GameTime GameTime)
         {
+            inputListener.Update(GameTime);
+            gui.Update(GameTime);
+
+            if (gui.Screen.Desktop.Children.Contains(storyWindow))
+                return;
+
             if (G.Player.HP <= 0)
             {
                 // Player Dead
@@ -396,7 +462,7 @@ namespace Desktop
 
             AppSpriteBatch.End();
 
-//            gui.Draw(GameTime);
+            gui.Draw(GameTime);
         }
     }
 }

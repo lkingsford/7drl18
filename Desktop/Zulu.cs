@@ -1,4 +1,6 @@
-﻿namespace Game
+﻿using System;
+
+namespace Game
 {
     class Zulu : Enemy
     {
@@ -13,6 +15,9 @@
             this.dmg = 1;
             this.pushDistance = 4;
             this.stunTime = 2;
+            this.active = true;
         }
+
+        public bool active = false;
     }
 }
